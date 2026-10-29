@@ -12,6 +12,9 @@ plugins {
 group = "org.tsitle"
 version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gradle.properties'
 
+// FFmpeg version
+val depsVersionFfmpeg = project.findProperty("depsVersionFfmpeg")!! as String
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 fun getOperatingSystemName() : String {
@@ -65,9 +68,6 @@ val gitCommitHashProvider = if (!layout.projectDirectory.dir(".git").asFile.isDi
 		output.trim().ifEmpty { "unknown" }
 	}
 }
-
-// FFmpeg version
-val depsVersionFfmpeg = project.findProperty("depsVersionFfmpeg")!! as String
 
 println("Host: ${osName}-${cpuArch}")
 println("FFmpeg version: $depsVersionFfmpeg")
@@ -245,26 +245,22 @@ val generateLibInfo = tasks.register("generateLibInfo") {
 			import java.util.Optional;
 
 			public final class LibInfo {
-
 				private static final String LIB_VERSION = "$libVersion";
 				private static final String FFMPEG_VERSION = "$depsVersionFfmpeg";
 				private static final String GIT_COMMIT = "$gitCommitHash";
 
-				static Optional<String> getLibVersion() {
+				public static Optional<String> getLibVersion() {
 					if (LIB_VERSION.isBlank() || "null".equals(LIB_VERSION)) { return Optional.empty(); }
 					return Optional.of(LIB_VERSION);
 				}
-
-				static Optional<String> getFfmpegVersion() {
+				public static Optional<String> getFfmpegVersion() {
 					if (FFMPEG_VERSION.isBlank() || "null".equals(FFMPEG_VERSION)) { return Optional.empty(); }
 					return Optional.of(FFMPEG_VERSION);
 				}
-
-				static Optional<String> getGitCommit() {
+				public static Optional<String> getGitCommit() {
 					if (GIT_COMMIT.isBlank() || "null".equals(GIT_COMMIT)) { return Optional.empty(); }
 					return Optional.of(GIT_COMMIT);
 				}
-
 			}
 			""".trimIndent()
 		)
