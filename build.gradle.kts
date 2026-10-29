@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
 	id("java-library")
+	id("com.google.osdetector") version "1.7.3"  // see https://github.com/google/osdetector-gradle-plugin
 	// this plugin will filter the JavaCPP and FFmpeg libraries such that only libs for the current CPU architecture will be included
 	id("org.bytedeco.gradle-javacpp-platform") version "1.5.10"
 	id("com.gradleup.shadow") version "9.6.1"  // for Fat JARs
@@ -11,12 +12,65 @@ plugins {
 group = "org.tsitle"
 version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gradle.properties'
 
-// FFmpeg version
-var tmpArgProvider = providers.gradleProperty("FFMPEG_VERSION")  // returns null if not provided
-// Conditionally set [ffmpegVersion] based on the CLI input
-val ffmpegVersion = tmpArgProvider.orNull ?: "7.1.1"
+// ---------------------------------------------------------------------------------------------------------------------
 
-println("FFmpeg version: $ffmpegVersion")
+fun getOperatingSystemName() : String {
+	return if (org.gradle.internal.os.OperatingSystem.current().isMacOsX) {
+		"macos"
+	} else if (org.gradle.internal.os.OperatingSystem.current().isLinux) {
+		"linux"
+	} else if (org.gradle.internal.os.OperatingSystem.current().isWindows) {
+		"win"
+	} else {
+		throw Error("Operating System not supported")
+	}
+}
+
+fun getCpuArchitecture() : String {
+	return when (System.getProperty("os.arch")) {
+		"x86_64", "x64", "amd64" -> "x64"
+		/*Linux/macOS:*/"aarch64" -> "aarch64"
+		else -> throw Error("CPU Architecture not supported")
+	}
+}
+
+fun getLinuxDistroType() : String {
+	if (getOperatingSystemName() != "linux") {
+		return "none"
+	}
+	val tmpRel = osdetector.release
+	if (tmpRel.isLike("debian")) {
+		return "debian"
+	}
+	if (tmpRel.isLike("redhat") || tmpRel.isLike("fedora")) {
+		return "redhat"
+	}
+	throw Error("Linux distribution type '${tmpRel}' not supported")
+}
+
+val osName: String = getOperatingSystemName()
+val cpuArch: String = getCpuArchitecture()
+if (osName == "win" && cpuArch != "x64") {
+	throw Error("Cannot build for ${osName}-${cpuArch}")
+}
+val lxDistroType: String = getLinuxDistroType()
+
+val gitCommitHashProvider = if (!layout.projectDirectory.dir(".git").asFile.isDirectory) {
+	providers.provider { "unknown" }
+} else {
+	providers.exec {
+		commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
+		isIgnoreExitValue = true
+	}.standardOutput.asText.map { output ->
+		output.trim().ifEmpty { "unknown" }
+	}
+}
+
+// FFmpeg version
+val depsVersionFfmpeg = project.findProperty("depsVersionFfmpeg")!! as String
+
+println("Host: ${osName}-${cpuArch}")
+println("FFmpeg version: $depsVersionFfmpeg")
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -52,9 +106,8 @@ dependencies {
 	//
 	implementation("org.jspecify:jspecify:1.0.0")
 
-	implementation("org.zeromq:jeromq:0.6.0")  // for ZeroMQ
-
-	when (ffmpegVersion) {
+	// FFmpeg and JavaCPP
+	when (depsVersionFfmpeg) {
 		"7.1.1" -> {
 			implementation("org.bytedeco:ffmpeg-platform:7.1.1-1.5.12")
 		}
@@ -64,7 +117,7 @@ dependencies {
 		"8.1.2" -> {
 			implementation("org.bytedeco:ffmpeg-platform:8.1.2-1.5.14")  // requires Linux package 'libva-drm2'
 		}
-		else -> { throw Error("FFmpeg version '${ffmpegVersion}' not supported") }
+		else -> { throw Error("FFmpeg version '${depsVersionFfmpeg}' not supported") }
 	}
 
 	// TS lib xrtxp
@@ -91,7 +144,17 @@ tasks.test {
 
 	maxHeapSize = "1G"
 
-	jvmArgs("--enable-native-access=ALL-UNNAMED")  // for FFmpeg
+	jvmArgs(
+		"--enable-native-access=ALL-UNNAMED",  // for FFmpeg
+		"-DlibVersion=${version}",
+		"-DffmpegVersion=${depsVersionFfmpeg}"
+	)
+
+	jvmArgumentProviders.add(
+		CommandLineArgumentProvider {
+			listOf("-DgitCommit=${gitCommitHashProvider.get()}")
+		}
+	)
 
 	/*
 	 * testLogging based on
@@ -155,5 +218,63 @@ tasks.jar {
 
 tasks.shadowJar {
 	dependsOn("jar")
-	archiveClassifier.set("full")  // replaces the default suffix '-all' with '-full'
+	archiveClassifier.set("full-${osName}-${cpuArch}")  // replaces the default suffix '-all' with '-full-OS-ARCH'
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+val generatedSourcesDir = layout.buildDirectory.dir("generated/sources/libInfo/java")
+
+val generateLibInfo = tasks.register("generateLibInfo") {
+	val libVersion = project.version.toString()
+
+	inputs.property("libVersion", libVersion)
+	inputs.property("ffmpegVersion", depsVersionFfmpeg)
+	inputs.property("gitCommit", gitCommitHashProvider)
+	outputs.dir(generatedSourcesDir)
+
+	doLast {
+		val gitCommitHash = gitCommitHashProvider.get()
+		val outputDir = generatedSourcesDir.get().asFile.resolve("org/tsitle/lib_ffmpeg")
+		outputDir.mkdirs()
+
+		outputDir.resolve("LibInfo.java").writeText(
+			"""
+			package org.tsitle.lib_ffmpeg;
+
+			import java.util.Optional;
+
+			public final class LibInfo {
+
+				private static final String LIB_VERSION = "$libVersion";
+				private static final String FFMPEG_VERSION = "$depsVersionFfmpeg";
+				private static final String GIT_COMMIT = "$gitCommitHash";
+
+				static Optional<String> getLibVersion() {
+					if (LIB_VERSION.isBlank() || "null".equals(LIB_VERSION)) { return Optional.empty(); }
+					return Optional.of(LIB_VERSION);
+				}
+
+				static Optional<String> getFfmpegVersion() {
+					if (FFMPEG_VERSION.isBlank() || "null".equals(FFMPEG_VERSION)) { return Optional.empty(); }
+					return Optional.of(FFMPEG_VERSION);
+				}
+
+				static Optional<String> getGitCommit() {
+					if (GIT_COMMIT.isBlank() || "null".equals(GIT_COMMIT)) { return Optional.empty(); }
+					return Optional.of(GIT_COMMIT);
+				}
+
+			}
+			""".trimIndent()
+		)
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir(generateLibInfo)
+		}
+	}
 }
