@@ -8,7 +8,7 @@ plugins {
 	id("com.gradleup.shadow") version "9.6.1"  // for Fat JARs
 }
 
-group = "org.tsitle"
+group = "io.github.tsitle"
 version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gradle.properties'
 
 // FFmpeg version
@@ -219,12 +219,12 @@ val generateLibInfo = tasks.register("generateLibInfo") {
 
 	doLast {
 		val gitCommitHash = gitCommitHashProvider.get()
-		val outputDir = generatedSourcesDir.get().asFile.resolve("org/tsitle/lib_ffmpeg")
+		val outputDir = generatedSourcesDir.get().asFile.resolve("io/github/tsitle/lib_ffmpeg")
 		outputDir.mkdirs()
 
 		outputDir.resolve("LibInfo.java").writeText(
 			"""
-			package org.tsitle.lib_ffmpeg;
+			package io.github.tsitle.lib_ffmpeg;
 
 			import java.util.Optional;
 
