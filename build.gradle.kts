@@ -3,7 +3,6 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
 	id("java-library")
-	id("com.google.osdetector") version "1.7.3"  // see https://github.com/google/osdetector-gradle-plugin
 	// this plugin will filter the JavaCPP and FFmpeg libraries such that only libs for the current CPU architecture will be included
 	id("org.bytedeco.gradle-javacpp-platform") version "1.5.10"
 	id("com.gradleup.shadow") version "9.6.1"  // for Fat JARs
@@ -37,26 +36,11 @@ fun getCpuArchitecture() : String {
 	}
 }
 
-fun getLinuxDistroType() : String {
-	if (getOperatingSystemName() != "linux") {
-		return "none"
-	}
-	val tmpRel = osdetector.release
-	if (tmpRel.isLike("debian")) {
-		return "debian"
-	}
-	if (tmpRel.isLike("redhat") || tmpRel.isLike("fedora")) {
-		return "redhat"
-	}
-	throw Error("Linux distribution type '${tmpRel}' not supported")
-}
-
 val osName: String = getOperatingSystemName()
 val cpuArch: String = getCpuArchitecture()
 if (osName == "win" && cpuArch != "x64") {
 	throw Error("Cannot build for ${osName}-${cpuArch}")
 }
-val lxDistroType: String = getLinuxDistroType()
 
 val gitCommitHashProvider = if (!layout.projectDirectory.dir(".git").asFile.isDirectory) {
 	providers.provider { "unknown" }
