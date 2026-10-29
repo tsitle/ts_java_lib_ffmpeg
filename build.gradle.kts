@@ -5,6 +5,7 @@ plugins {
 	id("java-library")
 	// this plugin will filter the JavaCPP and FFmpeg libraries such that only libs for the current CPU architecture will be included
 	id("org.bytedeco.gradle-javacpp-platform") version "1.5.10"
+	id("com.gradleup.shadow") version "9.6.1"  // for Fat JARs
 }
 
 group = "org.tsitle"
@@ -31,11 +32,66 @@ java {
 	}*/
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+repositories {
+	mavenCentral()
+	// for local development:
+	flatDir { dirs("../lib-rtsp_xrtxp/build/libs") }
+}
+
+dependencies {
+	// for Unit Tests
+	val depsVersionOrgJunitJunitBom = project.findProperty("depsVersionOrgJunitJunitBom")!! as String
+	testImplementation(platform("org.junit:junit-bom:${depsVersionOrgJunitJunitBom}"))
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+	//testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+
+	//
+	implementation("org.jspecify:jspecify:1.0.0")
+
+	implementation("org.zeromq:jeromq:0.6.0")  // for ZeroMQ
+
+	when (ffmpegVersion) {
+		"7.1.1" -> {
+			implementation("org.bytedeco:ffmpeg-platform:7.1.1-1.5.12")
+		}
+		"8.0.1" -> {
+			implementation("org.bytedeco:ffmpeg-platform:8.0.1-1.5.13")  // requires Linux package 'libva-drm2'
+		}
+		"8.1.2" -> {
+			implementation("org.bytedeco:ffmpeg-platform:8.1.2-1.5.14")  // requires Linux package 'libva-drm2'
+		}
+		else -> { throw Error("FFmpeg version '${ffmpegVersion}' not supported") }
+	}
+
+	// TS lib xrtxp
+	val depsVersionTsLibXrtxp = project.findProperty("depsVersionTsLibXrtxp")!! as String
+	//implementation("io.github.tsitle:lib_xrtxp:${depsVersionTsLibXrtxp}")  // use official release
+	implementation(":ts_lib_xrtxp:${depsVersionTsLibXrtxp}")  // for local development
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+tasks.compileJava {
+	options.javaModuleVersion = provider { version as String }
+}
+tasks.compileJava.configure {
+	options.encoding = "UTF-8"
+	options.compilerArgs.add("-Xlint:deprecation")
+}
+
 /*
  * see https://docs.gradle.org/current/userguide/java_testing.html
  */
 tasks.test {
 	useJUnitPlatform()
+
+	maxHeapSize = "1G"
+
+	jvmArgs("--enable-native-access=ALL-UNNAMED")  // for FFmpeg
 
 	/*
 	 * testLogging based on
@@ -91,66 +147,13 @@ tasks.test {
 	}
 }
 
-tasks.compileJava {
-	options.javaModuleVersion = provider { version as String }
-}
-tasks.compileJava.configure {
-	options.encoding = "UTF-8"
-	options.compilerArgs.add("-Xlint:deprecation")
-}
-
 // ---------------------------------------------------------------------------------------------------------------------
 
-repositories {
-	mavenCentral()
-	// for local development:
-	flatDir { dirs("../lib-rtsp_xrtxp/build/libs") }
+tasks.jar {
+	archiveClassifier.set("slim")  // adds the suffix '-slim'
 }
 
-dependencies {
-	// for Unit Tests
-	val depsVersionOrgJunitJunitBom = project.findProperty("depsVersionOrgJunitJunitBom")!! as String
-	testImplementation(platform("org.junit:junit-bom:${depsVersionOrgJunitJunitBom}"))
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-	//testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
-
-	//
-	implementation("org.jspecify:jspecify:1.0.0")
-
-	implementation("org.zeromq:jeromq:0.6.0")  // for ZeroMQ
-
-	when (ffmpegVersion) {
-		"7.1.1" -> {
-			implementation("org.bytedeco:ffmpeg-platform:7.1.1-1.5.12")
-		}
-		"8.0.1" -> {
-			implementation("org.bytedeco:ffmpeg-platform:8.0.1-1.5.13")  // requires Linux package 'libva-drm2'
-		}
-		"8.1.2" -> {
-			implementation("org.bytedeco:ffmpeg-platform:8.1.2-1.5.14")  // requires Linux package 'libva-drm2'
-		}
-		else -> { throw Error("FFmpeg version '${ffmpegVersion}' not supported") }
-	}
-
-	// TS lib xrtxp
-	val depsVersionTsLibXrtxp = project.findProperty("depsVersionTsLibXrtxp")!! as String
-	//implementation("io.github.tsitle:lib_xrtxp:${depsVersionTsLibXrtxp}")  // use official release
-	implementation(":ts_lib_xrtxp:${depsVersionTsLibXrtxp}")  // for local development
-}
-
-/*
- * see https://docs.gradle.org/current/userguide/java_testing.html
- */
-tasks.test {
-	useJUnitPlatform()
-
-	maxHeapSize = "1G"
-
-	jvmArgs("--enable-native-access=ALL-UNNAMED")  // for FFmpeg
-
-	testLogging {
-		events("passed")
-	}
+tasks.shadowJar {
+	dependsOn("jar")
+	archiveClassifier.set("full")  // replaces the default suffix '-all' with '-full'
 }
