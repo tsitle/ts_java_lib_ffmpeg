@@ -84,8 +84,6 @@ dependencies {
 	testImplementation(platform("org.junit:junit-bom:${depsVersionOrgJunitJunitBom}"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-	//testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
 
 	//
 	implementation("org.jspecify:jspecify:1.0.0")
