@@ -6,6 +6,8 @@ plugins {
 	// this plugin will filter the JavaCPP and FFmpeg libraries such that only libs for the current CPU architecture will be included
 	id("org.bytedeco.gradle-javacpp-platform") version "1.5.10"
 	id("com.gradleup.shadow") version "9.6.1"  // for Fat JARs
+	id("maven-publish")
+	id("org.jreleaser") version "1.27.0"
 }
 
 group = "io.github.tsitle"
@@ -75,6 +77,9 @@ java {
 	/*toolchain {
 		languageVersion.set(JavaLanguageVersion.of(25))
 	}*/
+
+	withJavadocJar()
+	withSourcesJar()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -100,7 +105,11 @@ dependencies {
 	//
 	implementation("org.jspecify:jspecify:1.0.0")
 
-	// FFmpeg and JavaCPP
+	/*
+	 * FFmpeg and JavaCPP
+	 * --> when the library is being built with the Docker image, the custom-built JavaCPP and FFmpeg versions
+	 *     will be used (from the local Maven repository within the Docker image)
+	 */
 	when (depsVersionFfmpeg) {
 		"7.1.1" -> {
 			implementation("org.bytedeco:ffmpeg-platform:7.1.1-1.5.12")
@@ -270,6 +279,77 @@ sourceSets {
 	main {
 		java {
 			srcDir(generateLibInfo)
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+tasks.withType<PublishToMavenRepository>().configureEach {
+	dependsOn(tasks.shadowJar)
+}
+
+publishing {
+	publications {
+		create<MavenPublication>("maven") {
+			groupId = "io.github.tsitle"
+			artifactId = "ts_lib_ffmpeg_${osName}_${cpuArch}"
+
+			artifact(tasks.named<Jar>("shadowJar")) {
+				classifier = null
+			}
+			artifact(tasks.named<Jar>("sourcesJar"))
+			artifact(tasks.named<Jar>("javadocJar"))
+
+			pom {
+				name.set("TS Lib FFmpeg")
+				description.set("Java Library for FFmpeg")
+				url.set("https://github.com/tsitle/ts_java_lib_ffmpeg")
+				inceptionYear.set("2026")
+				licenses {
+					license {
+						name.set("Apache-2.0")
+						url.set("https://spdx.org/licenses/Apache-2.0.html")
+					}
+				}
+				developers {
+					developer {
+						id.set("tsitle")
+						name.set("TSITLE")
+					}
+				}
+				scm {
+					connection.set("scm:git:https://github.com/tsitle/ts_java_lib_ffmpeg.git")
+					developerConnection.set("scm:git:git@github.com:tsitle/ts_java_lib_ffmpeg.git")
+					url.set("https://github.com/tsitle/ts_java_lib_ffmpeg")
+				}
+			}
+		}
+	}
+
+	repositories {
+		maven {
+			url = uri(layout.buildDirectory.dir("staging-deploy"))
+		}
+	}
+}
+
+jreleaser {
+	signing {
+		pgp {
+			active.set(org.jreleaser.model.Active.ALWAYS)
+			armored.set(true)
+		}
+	}
+	deploy {
+		maven {
+			mavenCentral {
+				create("sonatype") {
+					active.set(org.jreleaser.model.Active.ALWAYS)
+					url.set("https://central.sonatype.com/api/v1/publisher")
+					stagingRepository("build/staging-deploy")
+				}
+			}
 		}
 	}
 }
