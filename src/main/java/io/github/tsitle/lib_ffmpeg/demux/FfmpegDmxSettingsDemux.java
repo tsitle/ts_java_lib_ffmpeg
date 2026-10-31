@@ -9,7 +9,7 @@ import io.github.tsitle.lib_ffmpeg.FfmpegPktConvModeH26x;
  */
 public final class FfmpegDmxSettingsDemux extends FfmpegDmxSettingsBase {
 
-	/** Maximum seconds to demux (<= 0 means no limit) */
+	/** Maximum seconds to demux (a value less or equal to 0 means no limit) */
 	public long cfgMaxSecs = -1L;
 	/** Output H.26x as AnnexB, length-prefixed or as-is? */
 	public @NonNull FfmpegPktConvModeH26x cfgOutputModeH26x = FfmpegPktConvModeH26x.PASSTHROUGH;

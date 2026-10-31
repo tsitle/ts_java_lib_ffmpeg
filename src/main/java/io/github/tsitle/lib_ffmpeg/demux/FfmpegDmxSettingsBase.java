@@ -11,9 +11,9 @@ import java.util.Set;
  */
 public class FfmpegDmxSettingsBase {
 
-	/** Select a specific video stream by number (<= 0 means auto-selection) */
+	/** Select a specific video stream by number (a value less or equal to 0 means auto-selection) */
 	public int cfgSelectStreamNumberVideo = -1;
-	/** Select a specific audio stream by number (<= 0 means auto-selection) */
+	/** Select a specific audio stream by number (a value less or equal to 0 means auto-selection) */
 	public int cfgSelectStreamNumberAudio = -1;
 
 	/** Allow only specific codecs for video (true) or all? */

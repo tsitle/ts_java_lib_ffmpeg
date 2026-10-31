@@ -5,7 +5,7 @@ package io.github.tsitle.lib_ffmpeg.demux;
  */
 public final class FfmpegDmxSettingsTc extends FfmpegDmxSettingsBase {
 
-	/** Maximum seconds to demux (<= 0 means no limit) */
+	/** Maximum seconds to demux (a value less or equal to 0 means no limit) */
 	public long cfgMaxSecs = -1L;
 
 }
