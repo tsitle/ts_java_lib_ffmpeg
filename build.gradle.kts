@@ -11,8 +11,13 @@ plugins {
 group = "io.github.tsitle"
 version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gradle.properties'
 
-// FFmpeg version
+// use custom libraries from Maven repository?
+val tmpArgProvider = providers.gradleProperty("useCustomLibsFromMaven")  // returns null if not provided
+val doUseCustomLibsFromMaven: Boolean = tmpArgProvider.isPresent
+
+//
 val depsVersionFfmpeg = project.findProperty("depsVersionFfmpeg")!! as String
+val depsVersionTsLibXrtxp = project.findProperty("depsVersionTsLibXrtxp")!! as String
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -42,19 +47,21 @@ if (osName == "win" && cpuArch != "x64") {
 	throw Error("Cannot build for ${osName}-${cpuArch}")
 }
 
-val gitCommitHashProvider = if (!layout.projectDirectory.dir(".git").asFile.isDirectory) {
-	providers.provider { "unknown" }
-} else {
-	providers.exec {
-		commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
-		isIgnoreExitValue = true
-	}.standardOutput.asText.map { output ->
-		output.trim().ifEmpty { "unknown" }
-	}
-}
-
 println("Host: ${osName}-${cpuArch}")
 println("FFmpeg version: $depsVersionFfmpeg")
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+val gitCommitHashProvider = if (! layout.projectDirectory.dir(".git").asFile.isDirectory) {
+		providers.provider { "unknown" }
+	} else {
+		providers.exec {
+			commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
+			isIgnoreExitValue = true
+		}.standardOutput.asText.map { output ->
+			output.trim().ifEmpty { "unknown" }
+		}
+	}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -75,7 +82,12 @@ java {
 repositories {
 	mavenCentral()
 	// for local development:
-	flatDir { dirs("../lib-rtsp_xrtxp/build/libs") }
+	if (! doUseCustomLibsFromMaven) {
+		// for local development:
+		flatDir { dirs(
+				"../lib-rtsp_xrtxp/build/libs"
+			) }
+	}
 }
 
 dependencies {
@@ -102,10 +114,14 @@ dependencies {
 		else -> { throw Error("FFmpeg version '${depsVersionFfmpeg}' not supported") }
 	}
 
-	// TS lib xrtxp
-	val depsVersionTsLibXrtxp = project.findProperty("depsVersionTsLibXrtxp")!! as String
-	//implementation("io.github.tsitle:lib_xrtxp:${depsVersionTsLibXrtxp}")  // use official release
-	implementation(":ts_lib_xrtxp:${depsVersionTsLibXrtxp}")  // for local development
+	// custom libraries
+	if (! doUseCustomLibsFromMaven) {
+		// for local development
+		implementation(":ts_lib_xrtxp:${depsVersionTsLibXrtxp}")
+	} else {
+		// use official release
+		implementation("io.github.tsitle:ts_lib_xrtxp:${depsVersionTsLibXrtxp}")
+	}
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -208,6 +224,7 @@ tasks.shadowJar {
 val generatedSourcesDir = layout.buildDirectory.dir("generated/sources/libInfo/java")
 
 val generateLibInfo = tasks.register("generateLibInfo") {
+	description = "Generates LibInfo.java"
 	val libVersion = project.version.toString()
 
 	inputs.property("libVersion", libVersion)
