@@ -3,6 +3,8 @@ x-*.cmd
 
 docs/internal/
 
+packaging/
+
 
 ###
 .gradle
