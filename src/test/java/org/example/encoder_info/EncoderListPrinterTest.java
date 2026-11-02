@@ -1,4 +1,4 @@
-package io.github.tsitle.lib_ffmpeg;
+package org.example.encoder_info;
 
 import org.bytedeco.ffmpeg.avcodec.AVCodec;
 import org.bytedeco.ffmpeg.global.avcodec;

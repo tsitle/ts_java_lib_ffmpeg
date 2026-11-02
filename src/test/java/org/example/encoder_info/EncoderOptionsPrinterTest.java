@@ -1,5 +1,7 @@
-package io.github.tsitle.lib_ffmpeg;
+package org.example.encoder_info;
 
+import io.github.tsitle.lib_ffmpeg.FfmpegCodec;
+import io.github.tsitle.lib_ffmpeg.tc.FfmpegTcEncoderLists;
 import org.bytedeco.ffmpeg.avcodec.*;
 import org.bytedeco.ffmpeg.avutil.*;
 import org.bytedeco.ffmpeg.global.avcodec;
@@ -7,7 +9,6 @@ import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacpp.PointerPointer;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
-import io.github.tsitle.lib_ffmpeg.tc.FfmpegTcEncoderLists;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
