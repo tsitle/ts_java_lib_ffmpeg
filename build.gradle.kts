@@ -14,8 +14,8 @@ group = "io.github.tsitle"
 version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gradle.properties'
 
 // use custom libraries from Maven repository?
-val tmpArgProvider = providers.gradleProperty("useCustomLibsFromMaven")  // returns null if not provided
-val doUseCustomLibsFromMaven: Boolean = tmpArgProvider.isPresent
+val tmpArgProvider = providers.gradleProperty("useCustomLibFromMaven_xrtxp")  // returns null if not provided
+val doUseCustomLibFromMavenXrtxp: Boolean = tmpArgProvider.isPresent
 
 //
 val depsVersionFfmpeg = project.findProperty("depsVersionFfmpeg")!! as String
@@ -86,8 +86,7 @@ java {
 
 repositories {
 	mavenCentral()
-	// for local development:
-	if (! doUseCustomLibsFromMaven) {
+	if (! doUseCustomLibFromMavenXrtxp) {
 		// for local development:
 		flatDir { dirs(
 				"../lib-rtsp_xrtxp/build/libs"
@@ -124,12 +123,10 @@ dependencies {
 	}
 
 	// custom libraries
-	if (! doUseCustomLibsFromMaven) {
-		// for local development
-		implementation(":ts_lib_xrtxp:${depsVersionTsLibXrtxp}")
+	if (! doUseCustomLibFromMavenXrtxp) {
+		implementation(":ts_lib_xrtxp:${depsVersionTsLibXrtxp}")  // for local development
 	} else {
-		// use official release
-		implementation("io.github.tsitle:ts_lib_xrtxp:${depsVersionTsLibXrtxp}")
+		implementation("io.github.tsitle:ts_lib_xrtxp:${depsVersionTsLibXrtxp}")  // use official release
 	}
 }
 
