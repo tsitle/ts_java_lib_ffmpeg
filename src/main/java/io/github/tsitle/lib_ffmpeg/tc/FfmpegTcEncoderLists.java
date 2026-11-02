@@ -10,28 +10,43 @@ import java.util.Map;
 
 public final class FfmpegTcEncoderLists {
 
-	/** NVidia hardware encoder */
+	/** AV1: Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
+	public static final String ENCODER_NAME_AV1_RKMPP = "av1_rkmpp";
+	/** AV1: NVidia hardware encoder */
 	public static final String ENCODER_NAME_AV1_NVENC = "av1_nvenc";
 	public static final String ENCODER_NAME_AV1_LIBSVTAV1 = "libsvtav1";
 	public static final String ENCODER_NAME_AV1_LIBAOMAV1 = "libaom-av1";
 
-	/** Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
+	/** H264: Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
 	public static final String ENCODER_NAME_H264_RKMPP = "h264_rkmpp";
-	/** NVidia hardware encoder */
+	/** H264: NVidia hardware encoder */
 	public static final String ENCODER_NAME_H264_NVENC = "h264_nvenc";
 	public static final String ENCODER_NAME_H264_LIBOPENH264 = "libopenh264";
 
-	/** Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
+	/** H265/HEVC: Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
 	public static final String ENCODER_NAME_H265_RKMPP = "hevc_rkmpp";
-	/** NVidia hardware encoder */
+	/** H265/HEVC: NVidia hardware encoder */
 	public static final String ENCODER_NAME_H265_NVENC = "hevc_nvenc";
 
-	/** Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
+	/** MJPEG: Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
 	public static final String ENCODER_NAME_MJPEG_RKMPP = "mjpeg_rkmpp";
+
+	/** MPEG2: Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
+	public static final String ENCODER_NAME_MPEG2_RKMPP = "mpeg2_rkmpp";
+
+	/** MPEG4: Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
+	public static final String ENCODER_NAME_MPEG4_RKMPP = "mpeg4_rkmpp";
+
+	/** VP8: Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
+	public static final String ENCODER_NAME_VP8_RKMPP = "vp8_rkmpp";
+
+	/** VP9: Rockchip hardware encoder for RK3588 and others (FFmpeg 8.1+) */
+	public static final String ENCODER_NAME_VP9_RKMPP = "vp9_rkmpp";
 
 	private FfmpegTcEncoderLists() { }
 
 	public static final @NonNull List<@NonNull String> ENC_AV1 = new ArrayList<>() {{
+			add(ENCODER_NAME_AV1_RKMPP);  // untested
 			add(ENCODER_NAME_AV1_NVENC);
 			add(ENCODER_NAME_AV1_LIBSVTAV1);
 			add("av1_qsv");  // untested
@@ -66,12 +81,14 @@ public final class FfmpegTcEncoderLists {
 		}};
 
 	public static final @NonNull List<@NonNull String> ENC_MPEG2 = new ArrayList<>() {{
+			add(ENCODER_NAME_MPEG2_RKMPP);  // untested
 			add("mpeg2video");
 			add("mpeg2_qsv");  // untested
 			//add("mpeg2_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
 		}};
 
 	public static final @NonNull List<@NonNull String> ENC_MPEG4 = new ArrayList<>() {{
+			add(ENCODER_NAME_MPEG4_RKMPP);  // untested
 			add("mpeg4");
 			add("libxvid");  // untested
 		}};
@@ -81,11 +98,13 @@ public final class FfmpegTcEncoderLists {
 		}};
 
 	public static final @NonNull List<@NonNull String> ENC_VP8 = new ArrayList<>() {{
+			add(ENCODER_NAME_VP8_RKMPP);  // untested
 			add("libvpx");
 			//add("vp8_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
 		}};
 
 	public static final @NonNull List<@NonNull String> ENC_VP9 = new ArrayList<>() {{
+			add(ENCODER_NAME_VP9_RKMPP);  // untested
 			add("libvpx-vp9");
 			//add("vp9_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
 			add("vp9_qsv");  // untested
