@@ -36,3 +36,7 @@ dependencies {
 	implementation("io.github.tsitle:ts_lib_ffmpeg_linux_x64:1.2.2")  // or ts_lib_ffmpeg_linux_aarch64
 }
 ```
+
+## Sample Media Files
+
+All sample media files are derived from: [blender.org Big Buck Bunny](https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4.zip)
