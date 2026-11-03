@@ -1,6 +1,9 @@
 x-*.sh
 x-*.cmd
 
+data/out/
+data/ramdisk
+
 docs/internal/
 
 packaging/

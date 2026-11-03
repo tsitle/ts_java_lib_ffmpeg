@@ -109,6 +109,7 @@ final class ConfigDmxTcMux {
 		copyToDemuxerSettings_base(dmxSettings);
 	}
 
+	@SuppressWarnings("unused")
 	void copyToDemuxerSettings_tc(@NonNull FfmpegDmxSettingsTc dmxSettings) {
 		dmxSettings.cfgMaxSecs = dmx.maxSecs;
 		copyToDemuxerSettings_base(dmxSettings);
