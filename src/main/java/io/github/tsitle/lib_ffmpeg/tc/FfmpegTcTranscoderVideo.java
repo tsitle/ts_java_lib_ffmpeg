@@ -675,10 +675,11 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			return;
 		}
 		// MJPEG
-		if (tcSettingsVid.cfgFfmpegCodec == FfmpegCodec.V_MJPEG &&
-				tcSettingsVid.cfgOutputModeMjpeg == FfmpegTcSettingsOutVideo.OutputModeMjpeg.RTP) {
+		if (tcSettingsVid.cfgFfmpegCodec == FfmpegCodec.V_MJPEG) {
 			encoderCtx.color_range(avutil.AVCOL_RANGE_JPEG);  // full color range
-			avutil.av_opt_set(encoderCtx, "huffman", "default", avutil.AV_OPT_SEARCH_CHILDREN);  // (mjpeg) Huffman table strategy
+			if (tcSettingsVid.cfgOutputModeMjpeg == FfmpegTcSettingsOutVideo.OutputModeMjpeg.RTP) {
+				avutil.av_opt_set(encoderCtx, "huffman", "default", avutil.AV_OPT_SEARCH_CHILDREN);  // (mjpeg) Huffman table strategy
+			}
 			return;
 		}
 		// VP8/VP9
