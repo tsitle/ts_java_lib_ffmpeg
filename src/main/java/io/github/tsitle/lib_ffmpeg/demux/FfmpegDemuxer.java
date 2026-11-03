@@ -119,7 +119,6 @@ public final class FfmpegDemuxer implements AutoCloseable {
 	 * @param outSubStreamInfoAud Output for the audio sub-stream info
 	 * @throws FfmpegGenericException If any FFmpeg error occurs
 	 */
-	@SuppressWarnings("unused")
 	public static void readStreamInfos(
 				@Nullable LogMsgInterface logMsgInterface,
 				@NonNull String inputPathOrUri,
@@ -149,7 +148,6 @@ public final class FfmpegDemuxer implements AutoCloseable {
 	 * @param inputPathOrUri Path to the input file or URI of the input stream
 	 * @param dmxSettings Settings for demuxing
 	 */
-	@SuppressWarnings("unused")
 	public static FfmpegDemuxer createForDemuxingOnly(
 				@Nullable LogMsgInterface logMsgInterface,
 				@NonNull String inputPathOrUri,
@@ -193,7 +191,6 @@ public final class FfmpegDemuxer implements AutoCloseable {
 	 * @return Read result
 	 * @throws FfmpegGenericException If any FFmpeg error occurs
 	 */
-	@SuppressWarnings("unused")
 	public synchronized @NonNull ReadResult readNextAvPacket(@NonNull FfmpegAvPktBasics outputData) throws FfmpegGenericException {
 		outputData.clear();
 

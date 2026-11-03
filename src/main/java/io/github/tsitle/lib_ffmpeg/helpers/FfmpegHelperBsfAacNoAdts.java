@@ -70,7 +70,6 @@ public final class FfmpegHelperBsfAacNoAdts implements FfmpegHelperBsfAacInterfa
 	 * Remove the ADTS header from the AAC Access Unit (AU).
 	 * @param ioPkt In- and output buffer view of the packet
 	 */
-	@SuppressWarnings("unused")
 	public static void removeAdts(@NonNull BufferView ioPkt) {
 		if (ioPkt.getLength() < 3) {
 			throw new IllegalArgumentException(FfmpegHelperBsfAacNoAdts.class.getSimpleName() + ".removeAdts(): " +

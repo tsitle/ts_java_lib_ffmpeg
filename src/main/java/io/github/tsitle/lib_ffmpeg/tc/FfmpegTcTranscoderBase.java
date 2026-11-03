@@ -96,7 +96,6 @@ abstract class FfmpegTcTranscoderBase {
 		return tcSettingsOut.cfgFfmpegCodec;
 	}
 
-	@SuppressWarnings("unused")
 	public final void transcodePacketFromBuffer(@NonNull FfmpegAvPktBasics inputFrameData)
 			throws FfmpegDecoderNotFoundException, FfmpegGenericException, FfmpegEncoderNotFoundException {
 		if (inputFrameData.pktBe.isEmpty()) {
@@ -128,7 +127,6 @@ abstract class FfmpegTcTranscoderBase {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public final void transcodePacketFromAvPkt(
 				@NonNull AVFormatContext inputAvFmtCtx,
 				int subStreamIx,

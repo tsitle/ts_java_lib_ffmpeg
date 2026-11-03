@@ -12,7 +12,6 @@ public final class FfmpegHelperPixelFmtConv {
 
 	private FfmpegHelperPixelFmtConv() { }
 
-	@SuppressWarnings("unused")
 	public static int convertPixelFmtToInt(@NonNull String fncName, @NonNull FfmpegPixelFmt pixelFmt)
 			throws FfmpegGenericException {
 		return switch (pixelFmt) {

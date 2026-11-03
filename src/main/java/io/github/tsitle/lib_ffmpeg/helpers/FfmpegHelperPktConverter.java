@@ -42,7 +42,6 @@ public final class FfmpegHelperPktConverter {
 		outputPktBas.pos = inputPktAv.pos();
 	}
 
-	@SuppressWarnings("unused")
 	public static void convertBasicsToFf(
 				@NonNull FfmpegAvPktBasics inputPktBas,
 				@NonNull BufferView inputPktPayloadBv,

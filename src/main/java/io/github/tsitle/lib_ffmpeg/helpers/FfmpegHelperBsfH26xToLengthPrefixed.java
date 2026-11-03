@@ -64,7 +64,6 @@ public final class FfmpegHelperBsfH26xToLengthPrefixed implements FfmpegHelperBs
 		return isAnnexB(inBa);
 	}
 
-	@SuppressWarnings("unused")
 	public static boolean isAnnexB(@NonNull BufferExt pktBe) {
 		if (pktBe.getUsed() < 4) {
 			return false;

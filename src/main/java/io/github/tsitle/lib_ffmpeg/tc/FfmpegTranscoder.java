@@ -177,13 +177,11 @@ public final class FfmpegTranscoder implements AutoCloseable {
 
 	// -----------------------------------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
 	public boolean willProduceVideo() {
 		return (sourceParamsVideo.ffmpegCodec != FfmpegCodec.UNKNOWN &&
 				(copySubStreamVideo || ffmpegTranscoderVideo != null));
 	}
 
-	@SuppressWarnings("unused")
 	public boolean willProduceAudio() {
 		return (sourceParamsAudio.ffmpegCodec != FfmpegCodec.UNKNOWN &&
 				(copySubStreamAudio || ffmpegTranscoderAudio != null));
@@ -191,14 +189,12 @@ public final class FfmpegTranscoder implements AutoCloseable {
 
 	// -----------------------------------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
 	public long getDroppedFrameCount() {
 		return (ffmpegTranscoderVideo == null ? 0 : ffmpegTranscoderVideo.getDroppedFrameCount());
 	}
 
 	// -----------------------------------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
 	public void getCdcParamsVideo(@NonNull FfmpegCdcParamsVideo params) {
 		final String FNC_NAME = getClass().getSimpleName() + ".getCdcParamsVideo()";
 
@@ -221,7 +217,6 @@ public final class FfmpegTranscoder implements AutoCloseable {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public void getCdcParamsAudio(@NonNull FfmpegCdcParamsAudio params) {
 		final String FNC_NAME = getClass().getSimpleName() + ".getCdcParamsAudio()";
 
@@ -239,7 +234,6 @@ public final class FfmpegTranscoder implements AutoCloseable {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public @NonNull FfmpegTcAvPacketList transcodePacketFromBuffer(@NonNull FfmpegAvPktBasics inputFrameData)
 			throws FfmpegDecoderNotFoundException, FfmpegGenericException, FfmpegEncoderNotFoundException {
 		if (inputFrameData.isVideo) {
@@ -290,7 +284,6 @@ public final class FfmpegTranscoder implements AutoCloseable {
 		return recvTcAvHandler.rcvdPktsAud;
 	}
 
-	@SuppressWarnings("unused")
 	public @NonNull FfmpegTcAvPacketList getRemainingPackets(boolean getVideo) {
 		if (getVideo) {
 			return recvTcAvHandler.rcvdPktsVid;

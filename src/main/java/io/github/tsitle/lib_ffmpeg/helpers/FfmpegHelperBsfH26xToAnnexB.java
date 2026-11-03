@@ -27,7 +27,6 @@ public final class FfmpegHelperBsfH26xToAnnexB implements FfmpegHelperBsfH26xInt
 		initForStream(inVideoStream.codecpar(), inVideoStream.time_base());
 	}
 
-	@SuppressWarnings("unused")
 	public FfmpegHelperBsfH26xToAnnexB(boolean isH264, @NonNull AVCodecParameters codecParams, @NonNull AVRational timeBase)
 			throws FfmpegGenericException {
 		this.isH264 = isH264;
