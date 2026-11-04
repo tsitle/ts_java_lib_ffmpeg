@@ -26,7 +26,7 @@ class FfSharedLibInfoTest {
 		 * -I../include/mfx -I../include/svt-av1' --extra-ldflags=-L../lib/
 		 * --extra-libs='-lstdc++ -lpthread -ldl -lz -lm -lva-drm -lva-x11 -lva'
 		 */
-		//System.out.println("avutilBuildConfigInfo: " + tmpInfo.buildConfigInfo());
+		System.out.println("avutilBuildConfigInfo: " + tmpInfo.buildConfigInfo());
 
 		assertEquals(LibInfo.getFfmpegVersion().orElse("-not_set-"), tmpInfo.version());
 	}
