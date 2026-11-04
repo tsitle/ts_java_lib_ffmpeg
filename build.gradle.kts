@@ -85,6 +85,7 @@ java {
 // ---------------------------------------------------------------------------------------------------------------------
 
 repositories {
+	mavenLocal()  // for the locally built JavaCPP library (see Docker base image)
 	mavenCentral()
 	if (! doUseCustomLibFromMavenXrtxp) {
 		// for local development:
