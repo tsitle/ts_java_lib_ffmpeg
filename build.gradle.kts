@@ -14,12 +14,22 @@ group = "io.github.tsitle"
 version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gradle.properties'
 
 // use custom libraries from Maven repository?
-val tmpArgProvider = providers.gradleProperty("useCustomLibFromMaven_xrtxp")  // returns null if not provided
+var tmpArgProvider = providers.gradleProperty("useCustomLibFromMaven_xrtxp")  // returns null if not provided
 val doUseCustomLibFromMavenXrtxp: Boolean = tmpArgProvider.isPresent
+
+// use custom libraries from Maven repository?
+tmpArgProvider = providers.gradleProperty("useCustomBuiltJavaCppAndFfmpeg")  // returns null if not provided
+val doUseCustomBuiltJavaCppAndFfmpeg: Boolean = tmpArgProvider.isPresent
 
 //
 val depsVersionFfmpeg = project.findProperty("depsVersionFfmpeg")!! as String
 val depsVersionTsLibXrtxp = project.findProperty("depsVersionTsLibXrtxp")!! as String
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+if (doUseCustomBuiltJavaCppAndFfmpeg) {
+	version = "${version}-cb_javacpp_ffmpeg"
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -49,8 +59,11 @@ if (osName == "win" && cpuArch != "x64") {
 	throw Error("Cannot build for ${osName}-${cpuArch}")
 }
 
+println("Building lib version: $version")
 println("Host: ${osName}-${cpuArch}")
 println("FFmpeg version: $depsVersionFfmpeg")
+println("Use ts_lib_xrtxp from Maven: $doUseCustomLibFromMavenXrtxp")
+println("Use custom-built JavaCPP/FFmpeg: $doUseCustomBuiltJavaCppAndFfmpeg")
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -85,7 +98,9 @@ java {
 // ---------------------------------------------------------------------------------------------------------------------
 
 repositories {
-	mavenLocal()  // for the locally built JavaCPP library (see Docker base image)
+	if (doUseCustomBuiltJavaCppAndFfmpeg) {
+		mavenLocal()  // for the locally built JavaCPP/FFmpeg library (see Docker base image)
+	}
 	mavenCentral()
 	if (! doUseCustomLibFromMavenXrtxp) {
 		// for local development:
@@ -110,15 +125,26 @@ dependencies {
 	 * --> when the library is being built with the Docker image, the custom-built JavaCPP and FFmpeg versions
 	 *     will be used (from the local Maven repository within the Docker image)
 	 */
+	val cpuArchJavaCpp = if (cpuArch == "aarch64") "arm64" else "x86_64"
 	when (depsVersionFfmpeg) {
-		"7.1.1" -> {
+		/*"7.1.1" -> {
 			implementation("org.bytedeco:ffmpeg-platform:7.1.1-1.5.12")
 		}
 		"8.0.1" -> {
 			implementation("org.bytedeco:ffmpeg-platform:8.0.1-1.5.13")  // requires Linux package 'libva-drm2'
-		}
+		}*/
 		"8.1.2" -> {
-			implementation("org.bytedeco:ffmpeg-platform:8.1.2-1.5.14")  // requires Linux package 'libva-drm2'
+			if (doUseCustomBuiltJavaCppAndFfmpeg) {
+				/*
+				 * Note: without 'ffmpeg-platform' we need to add the following dependencies manually
+				 */
+				implementation("org.bytedeco:ffmpeg:8.1.2-1.5.14-tsitle")  // requires Linux package 'libva-drm2'
+				implementation("org.bytedeco:ffmpeg:8.1.2-1.5.14-tsitle:${osName}-${cpuArchJavaCpp}")  // requires Linux package 'libva-drm2'
+				implementation("org.bytedeco:javacpp:1.5.14")
+				implementation("org.bytedeco:javacpp:1.5.14:${osName}-${cpuArchJavaCpp}")
+			} else {
+				implementation("org.bytedeco:ffmpeg-platform:8.1.2-1.5.14")  // requires Linux package 'libva-drm2'
+			}
 		}
 		else -> { throw Error("FFmpeg version '${depsVersionFfmpeg}' not supported") }
 	}
