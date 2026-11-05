@@ -2,17 +2,34 @@ package org.example.encoder_info;
 
 import org.bytedeco.ffmpeg.avcodec.AVCodec;
 import org.bytedeco.ffmpeg.global.avcodec;
+import org.bytedeco.ffmpeg.global.avutil;
+import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.Pointer;
 import org.bytedeco.javacpp.PointerPointer;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
 class EncoderListPrinterTest {
 
+	@BeforeAll
+	static void setUp() {
+		// make sure the FFmpeg/JavaCPP libraries are loaded
+		String avutilVersion;
+		try (BytePointer bp = avutil.av_version_info()) {
+			avutilVersion = (bp != null ? bp.getString(StandardCharsets.UTF_8) : "-unknown-");
+		}
+		System.out.println(EncoderListPrinterTest.class.getSimpleName() + ".setUp(): " +
+				"avutilVersion=" + avutilVersion);
+	}
+
+	// -----------------------------------------------------------------------------------------------------------------
+
 	@Test
 	void showEncoders() {
 		PointerPointer<Pointer> opaque = new PointerPointer<>(1);
+		//noinspection RedundantCast
 		opaque.put(0, (Pointer) null);
 		AVCodec codec;
 

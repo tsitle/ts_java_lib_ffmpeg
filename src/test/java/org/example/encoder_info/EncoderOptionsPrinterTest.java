@@ -6,8 +6,10 @@ import org.bytedeco.ffmpeg.avcodec.*;
 import org.bytedeco.ffmpeg.avutil.*;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
+import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.PointerPointer;
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -15,6 +17,19 @@ import java.util.List;
 import java.util.Optional;
 
 class EncoderOptionsPrinterTest {
+
+	@BeforeAll
+	static void setUp() {
+		// make sure the FFmpeg/JavaCPP libraries are loaded
+		String avutilVersion;
+		try (BytePointer bp = avutil.av_version_info()) {
+			avutilVersion = (bp != null ? bp.getString(StandardCharsets.UTF_8) : "-unknown-");
+		}
+		System.out.println(EncoderOptionsPrinterTest.class.getSimpleName() + ".setUp(): " +
+				"avutilVersion=" + avutilVersion);
+	}
+
+	// -----------------------------------------------------------------------------------------------------------------
 
 	@Test
 	void showGenericOptions() {
