@@ -1,8 +1,9 @@
 x-*.sh
 x-*.cmd
 
-data/out/
-data/ramdisk
+/data/outp/*
+!/data/outp/.gitkeep
+/data/ramdisk
 
 docs/internal/
 
@@ -25,7 +26,6 @@ build/
 *.iws
 *.iml
 *.ipr
-out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
