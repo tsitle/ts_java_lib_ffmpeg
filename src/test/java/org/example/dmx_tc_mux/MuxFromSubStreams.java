@@ -126,7 +126,7 @@ class MuxFromSubStreams implements LogMsgInterface  {
 
 		localCfg.tc.aud.audioBitRateKbps = FfmpegAudioBitRate.ABR_192;
 
-		localCfg.mux.outputFilePath = "data/" + (new File("data/ramdisk").exists() ? "ramdisk" : "out") +
+		localCfg.mux.outputFilePath = "data/" + (new File("data/ramdisk").exists() ? "ramdisk" : "outp") +
 				"/" + localCfg.mux.outputFilePath;
 
 		logDebug(FNC_NAME, "Demux file: '" + localCfg.dmx.inputFilePath + "'" +
