@@ -21,10 +21,14 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class MuxFromSubStreams implements LogMsgInterface  {
+
+	private static final String ENV_DISABLED_ENCODERS = "TS_LIB_FFMPEG_UT_DISABLED_ENCODERS";
 
 	private static final RtxpLogLevel CFG_LOG_LEVEL = RtxpLogLevel.DEBUG;
 	private static final int CFG_DEMUX_SELECT_STREAM_NUMBER_VIDEO = -1;
@@ -59,6 +63,8 @@ class MuxFromSubStreams implements LogMsgInterface  {
 	private final FfmpegTcSettingsOutVideo tcSettingsVideo = new FfmpegTcSettingsOutVideo();
 	private final FfmpegTcSettingsOutAudio tcSettingsAudio = new FfmpegTcSettingsOutAudio();
 
+	private final Set<@NonNull String> cfgDisabledEncList;
+
 	MuxFromSubStreams(
 				@NonNull FfmpegDmxSubStreamInfoVideo inputSsInfoVid,
 				@NonNull FfmpegDmxSubStreamInfoAudio inputSsInfoAud
@@ -79,6 +85,17 @@ class MuxFromSubStreams implements LogMsgInterface  {
 		//
 		if (this.inputSsInfoVid.pixelFmt == FfmpegPixelFmt.UNKNOWN) {
 			this.inputSsInfoVid.pixelFmt = FfmpegPixelFmt.YUV420P;  // set to default
+		}
+
+		//
+		String tmpEnv = System.getenv(ENV_DISABLED_ENCODERS);
+		if (tmpEnv != null) {
+			this.cfgDisabledEncList = Arrays.stream(tmpEnv.split(","))
+					.map(String::toLowerCase)
+					.map(String::strip)
+					.collect(Collectors.toSet());
+		} else {
+			this.cfgDisabledEncList = Collections.emptySet();
 		}
 	}
 
@@ -123,6 +140,7 @@ class MuxFromSubStreams implements LogMsgInterface  {
 		localCfg.tc.vid.videoFrameRateCm = FfmpegTcSettingsOutVideo.FrameRateConversionMode.LIMITED;
 		localCfg.tc.vid.videoFrameRateMax = FrameRateEnum.FPS_30_0;
 		localCfg.tc.vid.videoFrameRateFixed = FrameRateEnum.FPS_25_0;
+		localCfg.tc.vid.disabledEncList.addAll(cfgDisabledEncList);
 
 		localCfg.tc.aud.audioBitRateKbps = FfmpegAudioBitRate.ABR_192;
 
