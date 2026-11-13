@@ -59,6 +59,7 @@ public final class FfmpegTcSettingsOutVideo extends FfmpegTcSettingsOutBase {
 	public @NonNull GopSize cfgGopSize;
 
 	public final @NonNull Set<@NonNull String> cfgDisabledEncodersList = new HashSet<>();
+	public final @NonNull Set<@NonNull String> cfgDisabledDecodersList = new HashSet<>();
 
 	public FfmpegTcSettingsOutVideo() {
 		clear();
@@ -81,6 +82,7 @@ public final class FfmpegTcSettingsOutVideo extends FfmpegTcSettingsOutBase {
 		cfgGopSize = GopSize.EVERY_60_FRAMES;
 
 		cfgDisabledEncodersList.clear();
+		cfgDisabledDecodersList.clear();
 	}
 
 	public void copyFrom(@NonNull FfmpegTcSettingsOutVideo other) {
@@ -103,7 +105,14 @@ public final class FfmpegTcSettingsOutVideo extends FfmpegTcSettingsOutBase {
 		cfgGopSize = other.cfgGopSize;
 
 		cfgDisabledEncodersList.clear();
-		cfgDisabledEncodersList.addAll(other.cfgDisabledEncodersList);
+		for (String tmpEnc : other.cfgDisabledEncodersList) {
+			cfgDisabledEncodersList.add(tmpEnc.toLowerCase().strip());
+		}
+
+		cfgDisabledDecodersList.clear();
+		for (String tmpDec : other.cfgDisabledDecodersList) {
+			cfgDisabledDecodersList.add(tmpDec.toLowerCase().strip());
+		}
 	}
 
 }

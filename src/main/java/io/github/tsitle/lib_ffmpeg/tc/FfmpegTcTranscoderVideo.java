@@ -16,18 +16,15 @@ import org.bytedeco.ffmpeg.global.swscale;
 import org.bytedeco.ffmpeg.swscale.SwsContext;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import io.github.tsitle.lib_ffmpeg.*;
 import io.github.tsitle.lib_ffmpeg.exceptions.FfmpegDecoderNotFoundException;
 import io.github.tsitle.lib_ffmpeg.exceptions.FfmpegEncoderNotFoundException;
 import io.github.tsitle.lib_ffmpeg.exceptions.FfmpegGenericException;
-import io.github.tsitle.lib_ffmpeg.helpers.*;
 import io.github.tsitle.lib_xrtxp.avdata.extradata.ExtradataContainerHex;
 import io.github.tsitle.lib_xrtxp.common.logmsgs.LogMsgInterface;
 import io.github.tsitle.lib_xrtxp.common.types.ImageDimensions;
 import io.github.tsitle.lib_xrtxp.common.types.RationalNumber;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -93,7 +90,7 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		this.sourceParamsVideo.copyFrom(sourceParamsVideo);
 		this.tcSettingsVid.copyFrom(tcSettingsVid);
 		// libaom-av1 doesn't work all that well as is extremely slow
-		this.tcSettingsVid.cfgDisabledEncodersList.add(FfmpegTcEncoderLists.ENCODER_NAME_AV1_LIBAOMAV1);
+		this.tcSettingsVid.cfgDisabledEncodersList.add(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_LIBAOMAV1);
 
 		//
 		if (tcSettingsVid.cfgFrCm == FfmpegTcSettingsOutVideo.FrameRateConversionMode.FIXED) {
@@ -418,15 +415,10 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		FfmpegHelperFfError.checkFfmpegResult(FNC_NAME, "avcodec_parameters_to_context()", r);
 	}
 
-	private void prepareDecoderCtxFromStream() throws FfmpegDecoderNotFoundException, FfmpegGenericException {
+	private void prepareDecoderCtxFromStream(@NonNull AVCodec avCodecDecoder) throws FfmpegGenericException {
 		final String FNC_NAME = getClass().getSimpleName() + ".prepareDecoderCtxFromStream()";
 
-		AVCodec inCodec = avcodec.avcodec_find_decoder(sourceFfmpegCodec.getFfmpegId());
-		if (inCodec == null) {
-			throw new FfmpegDecoderNotFoundException(FNC_NAME + ": Decoder not found");
-		}
-
-		decoderCtx = avcodec.avcodec_alloc_context3(inCodec);
+		decoderCtx = avcodec.avcodec_alloc_context3(avCodecDecoder);
 		if (decoderCtx == null) {
 			throw new RuntimeException(FNC_NAME + ": Cannot allocate Decoder Context");
 		}
@@ -454,6 +446,35 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			);
 	}
 
+	private @Nullable AVCodec chooseDecoderForCodec() throws FfmpegGenericException {
+		final String FNC_NAME = getClass().getSimpleName() + ".chooseDecoderForCodec()";
+
+		if (sourceFfmpegCodec == FfmpegCodec.UNKNOWN) {
+			return null;
+		}
+		List<String> tmpDecoderNamesToTest = FfmpegTcDecoderLists.getVideoDecodersForCodec(
+				sourceFfmpegCodec,
+				tcSettingsVid.cfgDisabledDecodersList
+			);
+		for (String tmpDecName : tmpDecoderNamesToTest) {
+			AVCodec tmpCod = avcodec.avcodec_find_decoder_by_name(tmpDecName);
+			if (tmpCod != null) {
+				logDebug(FNC_NAME, "using '" + tmpDecName + "'");
+				return tmpCod;
+			}
+		}
+
+		// try default decoder
+		AVCodec resCod = avcodec.avcodec_find_encoder(sourceFfmpegCodec.getFfmpegId());
+		String tmpDecName = (resCod != null && resCod.name() != null ?
+				resCod.name().getString(StandardCharsets.UTF_8) : "-unknown-");
+		if (tcSettingsVid.cfgDisabledDecodersList.contains(tmpDecName.toLowerCase())) {
+			throw new FfmpegGenericException(FNC_NAME + ": default decoder '" + tmpDecName + "' is disabled");
+		}
+		logDebug(FNC_NAME, "using default (" + tmpDecName + ")");
+		return resCod;
+	}
+
 	private void openDecoderCtx(
 				boolean isFromFile,
 				@Nullable AVFormatContext inputAvFmtCtx,
@@ -461,9 +482,9 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			) throws FfmpegGenericException, FfmpegDecoderNotFoundException {
 		final String FNC_NAME = getClass().getSimpleName() + ".openDecoderCtx()";
 
-		AVCodec avCodecDecoder = avcodec.avcodec_find_decoder(sourceFfmpegCodec.getFfmpegId());
+		AVCodec avCodecDecoder = chooseDecoderForCodec();
 		if (avCodecDecoder == null) {
-			throw new FfmpegDecoderNotFoundException(FNC_NAME + ": Input decoder not found for codec_id=" + sourceFfmpegCodec.getFfmpegId());
+			throw new FfmpegDecoderNotFoundException(FNC_NAME + ": Decoder not found (id=" + sourceFfmpegCodec + ")");
 		}
 
 		if (isFromFile) {
@@ -472,7 +493,7 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			}
 			prepareDecoderCtxFromFile(avCodecDecoder, inputAvFmtCtx, subStreamIx);
 		} else {
-			prepareDecoderCtxFromStream();
+			prepareDecoderCtxFromStream(avCodecDecoder);
 		}
 		if (decoderCtx == null) {
 			throw new RuntimeException(FNC_NAME + ": no Decoder Context allocated");
@@ -494,16 +515,11 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		if (tcSettingsVid.cfgFfmpegCodec == FfmpegCodec.UNKNOWN) {
 			return null;
 		}
-		List<String> tmpEncoderNamesToTest;
-		if (FfmpegTcEncoderLists.ENC_BY_CODEC.containsKey(tcSettingsVid.cfgFfmpegCodec)) {
-			tmpEncoderNamesToTest = FfmpegTcEncoderLists.ENC_BY_CODEC.get(tcSettingsVid.cfgFfmpegCodec);
-		} else {
-			tmpEncoderNamesToTest = new ArrayList<>();
-		}
+		List<String> tmpEncoderNamesToTest = FfmpegTcEncoderLists.getVideoEncodersForCodec(
+				tcSettingsVid.cfgFfmpegCodec,
+				tcSettingsVid.cfgDisabledEncodersList
+			);
 		for (String tmpEncName : tmpEncoderNamesToTest) {
-			if (tcSettingsVid.cfgDisabledEncodersList.contains(tmpEncName.toLowerCase())) {
-				continue;
-			}
 			AVCodec tmpCod = avcodec.avcodec_find_encoder_by_name(tmpEncName);
 			if (tmpCod != null) {
 				logDebug(FNC_NAME, "using '" + tmpEncName + "'");
@@ -608,8 +624,8 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			return;
 		}
 		// bit rate
-		if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_AV1_LIBSVTAV1) ||
-				avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_AV1_NVENC)) {
+		if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_LIBSVTAV1) ||
+				avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_NVENC)) {
 			encoderCtx.rc_min_rate((long)((double)bitRateBps * 0.75));
 			encoderCtx.rc_max_rate((long)((double)bitRateBps * 1.25));
 		} else {
@@ -630,14 +646,14 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			 */
 			String tmpValCu;
 			String tmpValCrf;
-			if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_AV1_NVENC)) {
+			if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_NVENC)) {
 				//noinspection EnhancedSwitchMigration
 				switch (tcSettingsVid.cfgQualitySpeedRatioAv1) {
 					case FASTEST: tmpValCu = "14"; tmpValCrf = "40"; break;
 					case BALANCED: tmpValCu = "7"; tmpValCrf = "32"; break;
 					default: tmpValCu = "1"; tmpValCrf = "24"; break;
 				}
-			} else if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_AV1_LIBSVTAV1)) {
+			} else if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_LIBSVTAV1)) {
 				//noinspection EnhancedSwitchMigration
 				switch (tcSettingsVid.cfgQualitySpeedRatioAv1) {
 					case FASTEST: tmpValCu = "11"; tmpValCrf = "32"; break;
@@ -662,9 +678,9 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		}
 		// H264
 		if (tcSettingsVid.cfgFfmpegCodec == FfmpegCodec.V_H264) {
-			/*if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_H264_NVENC)) {
+			/*if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_H264_NVENC)) {
 				avutil.av_opt_set(encoderCtx, "profile", "high", avutil.AV_OPT_SEARCH_CHILDREN);  // (h264_nvenc)
-			} else if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_H264_LIBOPENH264)) {
+			} else if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_H264_LIBOPENH264)) {
 				avutil.av_opt_set(encoderCtx, "profile", "100", 0);  // (libopenh264) main=77, high=100
 			}*/
 			avutil.av_opt_set(encoderCtx, "profile", "high", avutil.AV_OPT_SEARCH_CHILDREN);  // (h264_nvenc|libopenh264)
