@@ -62,8 +62,8 @@ final class ConfigDmxTcMux {
 		public FfmpegTcSettingsOutVideo.@NonNull OutputModeMjpeg videoModeMjpeg =
 				FfmpegTcSettingsOutVideo.OutputModeMjpeg.OPTIMIZED;
 
-		@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 		public final @NonNull Set<@NonNull String> disabledEncList = new HashSet<>();
+		public final @NonNull Set<@NonNull String> disabledDecList = new HashSet<>();
 	}
 
 	static class TcAud {
@@ -170,6 +170,9 @@ final class ConfigDmxTcMux {
 
 				tcSettingsVideo.cfgDisabledEncodersList.clear();
 				tcSettingsVideo.cfgDisabledEncodersList.addAll(tc.vid.disabledEncList);
+
+				tcSettingsVideo.cfgDisabledDecodersList.clear();
+				tcSettingsVideo.cfgDisabledDecodersList.addAll(tc.vid.disabledDecList);
 			}
 		}
 

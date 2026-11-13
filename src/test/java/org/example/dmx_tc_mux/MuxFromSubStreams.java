@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 class MuxFromSubStreams implements LogMsgInterface  {
 
 	private static final String ENV_DISABLED_ENCODERS = "TS_LIB_FFMPEG_UT_DISABLED_ENCODERS";
+	private static final String ENV_DISABLED_DECODERS = "TS_LIB_FFMPEG_UT_DISABLED_DECODERS";
 
 	private static final RtxpLogLevel CFG_LOG_LEVEL = RtxpLogLevel.DEBUG;
 	private static final int CFG_DEMUX_SELECT_STREAM_NUMBER_VIDEO = -1;
@@ -64,6 +65,7 @@ class MuxFromSubStreams implements LogMsgInterface  {
 	private final FfmpegTcSettingsOutAudio tcSettingsAudio = new FfmpegTcSettingsOutAudio();
 
 	private final Set<@NonNull String> cfgDisabledEncList;
+	private final Set<@NonNull String> cfgDisabledDecList;
 
 	MuxFromSubStreams(
 				@NonNull FfmpegDmxSubStreamInfoVideo inputSsInfoVid,
@@ -88,15 +90,8 @@ class MuxFromSubStreams implements LogMsgInterface  {
 		}
 
 		//
-		String tmpEnv = System.getenv(ENV_DISABLED_ENCODERS);
-		if (tmpEnv != null) {
-			this.cfgDisabledEncList = Arrays.stream(tmpEnv.split(","))
-					.map(String::toLowerCase)
-					.map(String::strip)
-					.collect(Collectors.toSet());
-		} else {
-			this.cfgDisabledEncList = Collections.emptySet();
-		}
+		this.cfgDisabledEncList = getDisabledEnDeCodersFromEnv(ENV_DISABLED_ENCODERS);
+		this.cfgDisabledDecList = getDisabledEnDeCodersFromEnv(ENV_DISABLED_DECODERS);
 	}
 
 	// -----------------------------------------------------------------------------------------------------------------
@@ -141,6 +136,7 @@ class MuxFromSubStreams implements LogMsgInterface  {
 		localCfg.tc.vid.videoFrameRateMax = FrameRateEnum.FPS_30_0;
 		localCfg.tc.vid.videoFrameRateFixed = FrameRateEnum.FPS_25_0;
 		localCfg.tc.vid.disabledEncList.addAll(cfgDisabledEncList);
+		localCfg.tc.vid.disabledDecList.addAll(cfgDisabledDecList);
 
 		localCfg.tc.aud.audioBitRateKbps = FfmpegAudioBitRate.ABR_192;
 
@@ -220,6 +216,19 @@ class MuxFromSubStreams implements LogMsgInterface  {
 	}
 
 	// -----------------------------------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------------------------
+
+	private static @NonNull Set<@NonNull String> getDisabledEnDeCodersFromEnv(@NonNull String envKey) {
+		String tmpEnv = System.getenv(envKey);
+		if (tmpEnv != null) {
+			return Arrays.stream(tmpEnv.split(","))
+					.map(String::toLowerCase)
+					.map(String::strip)
+					.collect(Collectors.toSet());
+		}
+		return Collections.emptySet();
+	}
+
 	// -----------------------------------------------------------------------------------------------------------------
 
 	private void doDemuxingAndTranscodingAndMuxing_fromStream(

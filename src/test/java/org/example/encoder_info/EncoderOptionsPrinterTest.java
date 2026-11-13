@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +54,7 @@ class EncoderOptionsPrinterTest {
 
 	@Test
 	void showAv1Options() {
-		for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_AV1)) {
+		for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_AV1, new HashSet<>())) {
 			printEncoderOptions(encoderName);
 		}
 	}
@@ -65,7 +66,7 @@ class EncoderOptionsPrinterTest {
 		 */
 		List<String> searchTerms = List.of("cpu-used", "usage", "preset", "crf", "cq", "rc");
 		for (String searchTerm : searchTerms) {
-			for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_AV1)) {
+			for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_AV1, new HashSet<>())) {
 				Optional<String> tmpOptRes = searchEncoderOptions(encoderName, searchTerm);
 				if (tmpOptRes.isPresent()) {
 					System.out.println("Found encoder '" + encoderName + "' option: '" + searchTerm + "' = '" + tmpOptRes.get() + "'");
@@ -80,7 +81,7 @@ class EncoderOptionsPrinterTest {
 
 	@Test
 	void showH264Options() {
-		for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_H264)) {
+		for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_H264, new HashSet<>())) {
 			printEncoderOptions(encoderName);
 		}
 	}
@@ -89,7 +90,7 @@ class EncoderOptionsPrinterTest {
 	void searchH264Options() {
 		List<String> searchTerms = List.of("allow_skip_frames", "rc_mode");
 		for (String searchTerm : searchTerms) {
-			for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_H264)) {
+			for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_H264, new HashSet<>())) {
 				Optional<String> tmpOptRes = searchEncoderOptions(encoderName, searchTerm);
 				if (tmpOptRes.isPresent()) {
 					System.out.println("Found encoder '" + encoderName + "' option: '" + searchTerm + "' = '" + tmpOptRes.get() + "'");
@@ -104,7 +105,7 @@ class EncoderOptionsPrinterTest {
 
 	@Test
 	void showH265Options() {
-		for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_H265)) {
+		for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_H265, new HashSet<>())) {
 			printEncoderOptions(encoderName);
 		}
 	}
@@ -113,7 +114,7 @@ class EncoderOptionsPrinterTest {
 	void searchH265Options() {
 		List<String> searchTerms = List.of("deadline", "cpu-used", "allow_skip_frames", "rc_mode");
 		for (String searchTerm : searchTerms) {
-			for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_H265)) {
+			for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_H265, new HashSet<>())) {
 				Optional<String> tmpOptRes = searchEncoderOptions(encoderName, searchTerm);
 				if (tmpOptRes.isPresent()) {
 					System.out.println("Found encoder '" + encoderName + "' option: '" + searchTerm + "' = '" + tmpOptRes.get() + "'");
@@ -128,7 +129,7 @@ class EncoderOptionsPrinterTest {
 
 	@Test
 	void showMjpegOptions() {
-		for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_MJPEG)) {
+		for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_MJPEG, new HashSet<>())) {
 			printEncoderOptions(encoderName);
 		}
 	}
@@ -137,7 +138,7 @@ class EncoderOptionsPrinterTest {
 	void searchMjpegOptions() {
 		List<String> searchTerms = List.of("huffman");
 		for (String searchTerm : searchTerms) {
-			for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_MJPEG)) {
+			for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_MJPEG, new HashSet<>())) {
 				Optional<String> tmpOptRes = searchEncoderOptions(encoderName, searchTerm);
 				if (tmpOptRes.isPresent()) {
 					System.out.println("Found encoder '" + encoderName + "' option: '" + searchTerm + "' = '" + tmpOptRes.get() + "'");
@@ -152,7 +153,7 @@ class EncoderOptionsPrinterTest {
 
 	@Test
 	void showMpeg2Options() {
-		for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_MPEG2)) {
+		for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_MPEG2, new HashSet<>())) {
 			printEncoderOptions(encoderName);
 		}
 	}
@@ -161,7 +162,7 @@ class EncoderOptionsPrinterTest {
 	void searchMpeg2Options() {
 		List<String> searchTerms = List.of("deadline", "cpu-used");
 		for (String searchTerm : searchTerms) {
-			for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_MPEG2)) {
+			for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_MPEG2, new HashSet<>())) {
 				Optional<String> tmpOptRes = searchEncoderOptions(encoderName, searchTerm);
 				if (tmpOptRes.isPresent()) {
 					System.out.println("Found encoder '" + encoderName + "' option: '" + searchTerm + "' = '" + tmpOptRes.get() + "'");
@@ -176,7 +177,7 @@ class EncoderOptionsPrinterTest {
 
 	@Test
 	void showMpeg4Options() {
-		for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_MPEG4)) {
+		for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_MPEG4, new HashSet<>())) {
 			printEncoderOptions(encoderName);
 		}
 	}
@@ -185,7 +186,7 @@ class EncoderOptionsPrinterTest {
 	void searchMpeg4Options() {
 		List<String> searchTerms = List.of("deadline", "cpu-used");
 		for (String searchTerm : searchTerms) {
-			for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_MPEG4)) {
+			for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_MPEG4, new HashSet<>())) {
 				Optional<String> tmpOptRes = searchEncoderOptions(encoderName, searchTerm);
 				if (tmpOptRes.isPresent()) {
 					System.out.println("Found encoder '" + encoderName + "' option: '" + searchTerm + "' = '" + tmpOptRes.get() + "'");
@@ -200,7 +201,7 @@ class EncoderOptionsPrinterTest {
 
 	@Test
 	void showTheoraOptions() {
-		for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_THEORA)) {
+		for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_THEORA, new HashSet<>())) {
 			printEncoderOptions(encoderName);
 		}
 	}
@@ -209,7 +210,7 @@ class EncoderOptionsPrinterTest {
 	void searchTheoraOptions() {
 		List<String> searchTerms = List.of("deadline", "cpu-used");
 		for (String searchTerm : searchTerms) {
-			for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_THEORA)) {
+			for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_THEORA, new HashSet<>())) {
 				Optional<String> tmpOptRes = searchEncoderOptions(encoderName, searchTerm);
 				if (tmpOptRes.isPresent()) {
 					System.out.println("Found encoder '" + encoderName + "' option: '" + searchTerm + "' = '" + tmpOptRes.get() + "'");
@@ -224,7 +225,7 @@ class EncoderOptionsPrinterTest {
 
 	@Test
 	void showVp8Options() {
-		for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_VP8)) {
+		for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_VP8, new HashSet<>())) {
 			printEncoderOptions(encoderName);
 		}
 	}
@@ -233,7 +234,7 @@ class EncoderOptionsPrinterTest {
 	void searchVp8Options() {
 		List<String> searchTerms = List.of("deadline", "cpu-used");
 		for (String searchTerm : searchTerms) {
-			for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_VP8)) {
+			for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_VP8, new HashSet<>())) {
 				Optional<String> tmpOptRes = searchEncoderOptions(encoderName, searchTerm);
 				if (tmpOptRes.isPresent()) {
 					System.out.println("Found encoder '" + encoderName + "' option: '" + searchTerm + "' = '" + tmpOptRes.get() + "'");
@@ -248,7 +249,7 @@ class EncoderOptionsPrinterTest {
 
 	@Test
 	void showVp9Options() {
-		for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_VP9)) {
+		for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_VP9, new HashSet<>())) {
 			printEncoderOptions(encoderName);
 		}
 	}
@@ -257,7 +258,7 @@ class EncoderOptionsPrinterTest {
 	void searchVp9Options() {
 		List<String> searchTerms = List.of("deadline", "cpu-used");
 		for (String searchTerm : searchTerms) {
-			for (String encoderName : FfmpegTcEncoderLists.ENC_BY_CODEC.get(FfmpegCodec.V_VP9)) {
+			for (String encoderName : FfmpegTcEncoderLists.getVideoEncodersForCodec(FfmpegCodec.V_VP9, new HashSet<>())) {
 				Optional<String> tmpOptRes = searchEncoderOptions(encoderName, searchTerm);
 				if (tmpOptRes.isPresent()) {
 					System.out.println("Found encoder '" + encoderName + "' option: '" + searchTerm + "' = '" + tmpOptRes.get() + "'");
