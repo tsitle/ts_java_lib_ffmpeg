@@ -56,47 +56,47 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 			add(DECODER_NAME_V_AV1_RKMPP);
 			add(DECODER_NAME_V_AV1_NVDEC);
 			add("av1");
-			add("av1_qsv");
 			add("libaom-av1");
+			add("av1_qsv");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_H264 = new ArrayList<>() {{
 			add(DECODER_NAME_V_H264_RKMPP);
 			add(DECODER_NAME_V_H264_NVDEC);
 			add("h264");
-			add("h264_qsv");
-			add("h264_v4l2m2m");
 			add("libopenh264");
+			add("h264_v4l2m2m");  // untested
+			add("h264_qsv");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_H265 = new ArrayList<>() {{
 			add(DECODER_NAME_V_H265_RKMPP);
 			add(DECODER_NAME_V_H265_NVDEC);
 			add("hevc");
-			add("hevc_qsv");
-			add("hevc_v4l2m2m");
+			add("hevc_v4l2m2m");  // untested
+			add("hevc_qsv");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_MJPEG = new ArrayList<>() {{
 			add(DECODER_NAME_V_MJPEG_RKMPP);
 			add(DECODER_NAME_V_MJPEG_NVDEC);
 			add("mjpeg");
-			add("mjpeg_qsv");
+			add("mjpeg_qsv");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_MPEG2 = new ArrayList<>() {{
 			add(DECODER_NAME_V_MPEG2_RKMPP);
 			add(DECODER_NAME_V_MPEG2_NVDEC);
-			add("mpeg2_qsv");
-			add("mpeg2_v4l2m2m");
 			add("mpeg2video");
+			add("mpeg2_v4l2m2m");  // untested
+			add("mpeg2_qsv");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_MPEG4 = new ArrayList<>() {{
 			add(DECODER_NAME_V_MPEG4_RKMPP);
 			add(DECODER_NAME_V_MPEG4_NVDEC);
 			add("mpeg4");
-			add("mpeg4_v4l2m2m");
+			add("mpeg4_v4l2m2m");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_THEORA = new ArrayList<>() {{
@@ -108,8 +108,8 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 			add(DECODER_NAME_V_VP8_NVDEC);
 			add("libvpx");
 			add("vp8");
-			add("vp8_qsv");
-			add("vp8_v4l2m2m");
+			add("vp8_v4l2m2m");  // untested
+			add("vp8_qsv");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_VP9 = new ArrayList<>() {{
@@ -117,8 +117,8 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 			add(DECODER_NAME_V_VP9_NVDEC);
 			add("libvpx-vp9");
 			add("vp9");
-			add("vp9_qsv");
-			add("vp9_v4l2m2m");
+			add("vp9_v4l2m2m");  // untested
+			add("vp9_qsv");  // untested
 		}};
 
 	private static final @NonNull Map<@NonNull FfmpegCodec, List<@NonNull String>> DECODER_LIST_BY_VIDEO_CODEC =
