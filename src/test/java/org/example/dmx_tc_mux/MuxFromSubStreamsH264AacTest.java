@@ -142,10 +142,28 @@ class MuxFromSubStreamsH264AacTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {"f1-tcV_cpA-mpeg2"})
-	void test_inpA_f_tcVid_cpAud(String subTestNr) {
+	void test_inpA_f1_tcVid_cpAud(String subTestNr) {
 		internalTest_inputA(
 				subTestNr,
 				FfmpegCodec.V_MPEG2,
+				FfmpegCodec.A_AC3,  // this will be ignored
+				false,
+				true,
+				true,
+				true
+			);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"f2-tcV_cpA-theora"})
+	void test_inpA_f2_tcVid_cpAud(String subTestNr) {
+		if (! MuxFromSubStreams.haveEncoderForCodec(FfmpegCodec.V_THEORA)) {
+			System.out.println("(Theora encoder not available. Skipping test.)");
+			return;
+		}
+		internalTest_inputA(
+				subTestNr,
+				FfmpegCodec.V_THEORA,
 				FfmpegCodec.A_AC3,  // this will be ignored
 				false,
 				true,
