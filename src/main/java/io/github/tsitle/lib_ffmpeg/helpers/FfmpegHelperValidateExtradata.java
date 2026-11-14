@@ -23,7 +23,7 @@ public final class FfmpegHelperValidateExtradata {
 						ffmpegCodec == FfmpegCodec.V_AV1 ||
 						ffmpegCodec == FfmpegCodec.V_H264 ||
 						ffmpegCodec == FfmpegCodec.V_H265 ||
-						ffmpegCodec == FfmpegCodec.V_MPEG2 ||
+						/*ffmpegCodec == FfmpegCodec.V_MPEG2 || -- turns out that MPEG2v does not always require extradata*/
 						ffmpegCodec == FfmpegCodec.V_MPEG4 ||
 						ffmpegCodec == FfmpegCodec.V_THEORA)) {
 			throw new FfmpegGenericException(fncName + ": extradataHex is empty for codec=" + ffmpegCodec);
