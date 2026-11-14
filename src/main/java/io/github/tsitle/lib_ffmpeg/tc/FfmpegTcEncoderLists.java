@@ -61,6 +61,7 @@ public final class FfmpegTcEncoderLists extends FfmpegTcEnDeCoderListsBase {
 			add("libx264");  // untested
 			//add("h264_vulkan");  // untested, does not accept pixel format YUV420P and requires hardware frames
 			add(ENCODER_NAME_V_H264_LIBOPENH264);
+			add("h264_v4l2m2m");  // untested
 			add("h264_qsv");  // untested
 			add("h264_amf");  // untested
 			//add("h264_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
@@ -71,6 +72,7 @@ public final class FfmpegTcEncoderLists extends FfmpegTcEnDeCoderListsBase {
 			add(ENCODER_NAME_V_H265_NVENC);
 			//add("hevc_vulkan");  // untested, does not accept pixel format YUV420P and requires hardware frames
 			add("libx265");  // untested
+			add("hevc_v4l2m2m");  // untested
 			add("hevc_qsv");  // untested
 			add("hevc_amf");  // untested
 			//add("hevc_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
@@ -92,6 +94,7 @@ public final class FfmpegTcEncoderLists extends FfmpegTcEnDeCoderListsBase {
 			add(ENCODER_NAME_V_MPEG4_RKMPP);  // untested
 			add("mpeg4");
 			add("libxvid");  // untested
+			add("mpeg4_v4l2m2m");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_THEORA = new ArrayList<>() {{
@@ -101,6 +104,7 @@ public final class FfmpegTcEncoderLists extends FfmpegTcEnDeCoderListsBase {
 	private static final @NonNull List<@NonNull String> ENCODERS_V_VP8 = new ArrayList<>() {{
 			add(ENCODER_NAME_V_VP8_RKMPP);  // untested
 			add("libvpx");
+			add("vp8_v4l2m2m");  // untested
 			//add("vp8_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
 		}};
 
