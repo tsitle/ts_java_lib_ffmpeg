@@ -98,7 +98,7 @@ public final class FfmpegTcEncoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_THEORA = new ArrayList<>() {{
-			add("libtheora");  // untested
+			add("libtheora");
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_VP8 = new ArrayList<>() {{
