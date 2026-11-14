@@ -140,6 +140,20 @@ class MuxFromSubStreamsH264AacTest {
 			);
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = {"f1-tcV_cpA-mpeg2"})
+	void test_inpA_f_tcVid_cpAud(String subTestNr) {
+		internalTest_inputA(
+				subTestNr,
+				FfmpegCodec.V_MPEG2,
+				FfmpegCodec.A_AC3,  // this will be ignored
+				false,
+				true,
+				true,
+				true
+			);
+	}
+
 	// -----------------------------------------------------------------------------------------------------------------
 
 	@ParameterizedTest
