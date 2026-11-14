@@ -32,24 +32,7 @@ class MuxFromSubStreamsTheoraVorbTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"a2-tc-theora_aac-mkv"})
-	void test_inpA_a_tc_theora_aac_mkv(String subTestNr) {
-		if (! MuxFromSubStreams.haveEncoderForCodec(FfmpegCodec.V_THEORA)) {
-			System.out.println("(Theora encoder not available. Skipping test.)");
-			return;
-		}
-		internalTest_inputA(
-				subTestNr,
-				FfmpegCodec.V_THEORA,
-				FfmpegCodec.A_AAC,
-				false,
-				false,
-				true
-			);
-	}
-
-	@ParameterizedTest
-	@ValueSource(strings = {"a3-tc-mjpeg_aac-mkv"})
+	@ValueSource(strings = {"a2-tc-mjpeg_aac-mkv"})
 	void test_inpA_a_tc_mjpeg_aac_mkv(String subTestNr) {
 		internalTest_inputA(
 				subTestNr,
@@ -63,7 +46,7 @@ class MuxFromSubStreamsTheoraVorbTest {
 
 	@Disabled
 	@ParameterizedTest
-	@ValueSource(strings = {"a2-tc-h264_aac-mp4"})
+	@ValueSource(strings = {"a3-tc-h264_aac-mp4"})
 	void test_inpA_a_tc_h264_aac_mp4(String subTestNr) {
 		internalTest_inputA(
 				subTestNr,
