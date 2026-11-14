@@ -20,10 +20,7 @@ import io.github.tsitle.lib_xrtxp.common.types.FrameRateEnum;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class MuxFromSubStreams implements LogMsgInterface  {
@@ -113,6 +110,16 @@ class MuxFromSubStreams implements LogMsgInterface  {
 	// -----------------------------------------------------------------------------------------------------------------
 
 	@SuppressWarnings("SameParameterValue")
+	static boolean haveEncoderForCodec(@NonNull FfmpegCodec codec) {
+		List<String> tmpL = FfmpegTcEncoderLists.getVideoEncodersForCodec(
+				codec,
+				getDisabledEnDeCodersFromEnv(ENV_DISABLED_ENCODERS)
+			);
+		return (! tmpL.isEmpty());
+	}
+
+	// -----------------------------------------------------------------------------------------------------------------
+
 	boolean start(@NonNull ConfigDmxTcMux localCfg) {
 		final String FNC_NAME = getClass().getSimpleName() + ".start()";
 

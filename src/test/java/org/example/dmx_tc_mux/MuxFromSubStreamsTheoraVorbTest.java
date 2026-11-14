@@ -31,10 +31,13 @@ class MuxFromSubStreamsTheoraVorbTest {
 			);
 	}
 
-	@Disabled  // no Theora encoder available
 	@ParameterizedTest
 	@ValueSource(strings = {"a2-tc-theora_aac-mkv"})
 	void test_inpA_a_tc_theora_aac_mkv(String subTestNr) {
+		if (! MuxFromSubStreams.haveEncoderForCodec(FfmpegCodec.V_THEORA)) {
+			System.out.println("(Theora encoder not available. Skipping test.)");
+			return;
+		}
 		internalTest_inputA(
 				subTestNr,
 				FfmpegCodec.V_THEORA,
