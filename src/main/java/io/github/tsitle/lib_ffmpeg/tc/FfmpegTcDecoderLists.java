@@ -78,7 +78,7 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_MJPEG = new ArrayList<>() {{
-			add(DECODER_NAME_V_MJPEG_RKMPP);
+			add(DECODER_NAME_V_MJPEG_RKMPP);  // note: this is still missing in FFmpeg 8.1.2
 			add(DECODER_NAME_V_MJPEG_NVDEC);
 			add("mjpeg");
 			add("mjpeg_qsv");  // untested
