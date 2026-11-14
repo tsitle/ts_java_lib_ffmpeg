@@ -53,7 +53,7 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 	// -----------------------------------------------------
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_AV1 = new ArrayList<>() {{
-			add(DECODER_NAME_V_AV1_RKMPP);
+			add(DECODER_NAME_V_AV1_RKMPP);  // note: this is still missing in FFmpeg 8.1.2
 			add(DECODER_NAME_V_AV1_NVDEC);
 			add("av1");
 			add("libaom-av1");
@@ -85,7 +85,7 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_MPEG2 = new ArrayList<>() {{
-			add(DECODER_NAME_V_MPEG2_RKMPP);
+			add(DECODER_NAME_V_MPEG2_RKMPP);  // note: this is still missing in FFmpeg 8.1.2
 			add(DECODER_NAME_V_MPEG2_NVDEC);
 			add("mpeg2video");
 			add("mpeg2_v4l2m2m");  // untested
@@ -93,7 +93,7 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_MPEG4 = new ArrayList<>() {{
-			add(DECODER_NAME_V_MPEG4_RKMPP);
+			add(DECODER_NAME_V_MPEG4_RKMPP);  // note: this is still missing in FFmpeg 8.1.2
 			add(DECODER_NAME_V_MPEG4_NVDEC);
 			add("mpeg4");
 			add("mpeg4_v4l2m2m");  // untested
