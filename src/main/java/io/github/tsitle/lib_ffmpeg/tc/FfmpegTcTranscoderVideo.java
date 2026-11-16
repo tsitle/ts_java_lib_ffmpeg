@@ -64,6 +64,9 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 
 	private final @NonNull FfmpegCdcParamsVideo cdcParamsVideo = new FfmpegCdcParamsVideo();
 
+	private @NonNull String decoderName = "";
+	private @NonNull String encoderName = "";
+
 	/**
 	 * Constructor.
 	 * @param logMsgInterface 'Log message' instance (can be null)
@@ -459,7 +462,8 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		for (String tmpDecName : tmpDecoderNamesToTest) {
 			AVCodec tmpCod = avcodec.avcodec_find_decoder_by_name(tmpDecName);
 			if (tmpCod != null) {
-				logDebug(FNC_NAME, "using '" + tmpDecName + "'");
+				decoderName = tmpDecName;
+				logDebug(FNC_NAME, "using '" + decoderName + "'");
 				return tmpCod;
 			}
 		}
@@ -471,8 +475,41 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		if (tcSettingsVid.cfgDisabledDecodersList.contains(tmpDecName.toLowerCase())) {
 			throw new FfmpegGenericException(FNC_NAME + ": default decoder '" + tmpDecName + "' is disabled");
 		}
-		logDebug(FNC_NAME, "using default (" + tmpDecName + ")");
+		decoderName = tmpDecName;
+		logDebug(FNC_NAME, "using default (" + decoderName + ")");
 		return resCod;
+	}
+
+	private void setCodecSpecificDecoderOptions() throws FfmpegGenericException {
+		final String FNC_NAME = getClass().getSimpleName() + ".setCodecSpecificDecoderOptions()";
+
+		if (decoderCtx == null) {
+			return;
+		}
+		if (decoderName.equals(FfmpegTcDecoderLists.DECODER_NAME_V_AV1_RKMPP) ||
+				decoderName.equals(FfmpegTcDecoderLists.DECODER_NAME_V_H264_RKMPP) ||
+				decoderName.equals(FfmpegTcDecoderLists.DECODER_NAME_V_H265_RKMPP) ||
+				decoderName.equals(FfmpegTcDecoderLists.DECODER_NAME_V_MJPEG_RKMPP) ||
+				decoderName.equals(FfmpegTcDecoderLists.DECODER_NAME_V_MPEG2_RKMPP) ||
+				decoderName.equals(FfmpegTcDecoderLists.DECODER_NAME_V_MPEG4_RKMPP) ||
+				decoderName.equals(FfmpegTcDecoderLists.DECODER_NAME_V_VP8_RKMPP) ||
+				decoderName.equals(FfmpegTcDecoderLists.DECODER_NAME_V_VP9_RKMPP)) {
+			/*
+			 * (XXX_rkmpp) Enable AFBC (Arm Frame Buffer Compression) to save bandwidth (default off)
+			 *   0: Disable AFBC support
+			 *   1: Enable AFBC support
+			 *   2: Enable AFBC if capable RGA is available
+			 */
+			int r = avutil.av_opt_set(decoderCtx.priv_data(), "afbc", "2", 0);
+			FfmpegHelperFfError.checkFfmpegResult(FNC_NAME, "av_opt_set()", r);
+			/*
+			 * (XXX_rkmpp) Enable IEP (Image Enhancement Processor) for de-interlacing (default true)
+			 *   0: Disable de-interlacing
+			 *   1: Enable de-interlacing
+			 */
+			/*r = avutil.av_opt_set(decoderCtx.priv_data(), "deint", "0", 0);
+			FfmpegHelperFfError.checkFfmpegResult(FNC_NAME, "av_opt_set()", r);*/
+		}
 	}
 
 	private void openDecoderCtx(
@@ -499,6 +536,10 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			throw new RuntimeException(FNC_NAME + ": no Decoder Context allocated");
 		}
 
+		//
+		setCodecSpecificDecoderOptions();
+
+		//
 		int r = avcodec.avcodec_open2(decoderCtx, avCodecDecoder, (AVDictionary)null);
 		FfmpegHelperFfError.checkFfmpegResult(FNC_NAME, "avcodec_open2()", r);
 
@@ -522,7 +563,8 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		for (String tmpEncName : tmpEncoderNamesToTest) {
 			AVCodec tmpCod = avcodec.avcodec_find_encoder_by_name(tmpEncName);
 			if (tmpCod != null) {
-				logDebug(FNC_NAME, "using '" + tmpEncName + "'");
+				encoderName = tmpEncName;
+				logDebug(FNC_NAME, "using '" + encoderName + "'");
 				return tmpCod;
 			}
 		}
@@ -534,7 +576,8 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		if (tcSettingsVid.cfgDisabledEncodersList.contains(tmpEncName.toLowerCase())) {
 			throw new FfmpegGenericException(FNC_NAME + ": default encoder '" + tmpEncName + "' is disabled");
 		}
-		logDebug(FNC_NAME, "using default (" + tmpEncName + ")");
+		encoderName = tmpEncName;
+		logDebug(FNC_NAME, "using default (" + encoderName + ")");
 		return resCod;
 	}
 
@@ -545,13 +588,10 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		if (avCodecEncoder == null) {
 			throw new FfmpegEncoderNotFoundException(FNC_NAME + ": Encoder not found (id=" + tcSettingsVid.cfgFfmpegCodec + ")");
 		}
-		final String avEncName = (avCodecEncoder.name() != null ?
-				avCodecEncoder.name().getString(StandardCharsets.UTF_8)
-				: "-unknown-");
 
 		encoderCtx = avcodec.avcodec_alloc_context3(avCodecEncoder);
 		if (encoderCtx == null) {
-			throw new RuntimeException(FNC_NAME + ": Cannot allocate Encoder Context for '" + avEncName + "'");
+			throw new RuntimeException(FNC_NAME + ": Cannot allocate Encoder Context for '" + encoderName + "'");
 		}
 
 		// make sure it is divisible by 8
@@ -605,7 +645,7 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			//logDebug(FNC_NAME, "Enabled AV_CODEC_FLAG_GLOBAL_HEADER for " + tcSettingsVid.ffmpegCodec);
 		}
 
-		setCodecSpecificEncoderOptions(avEncName, tmpBrBps);
+		setCodecSpecificEncoderOptions(tmpBrBps);
 
 		AVDictionary opts = new AVDictionary();
 		int r = avcodec.avcodec_open2(encoderCtx, avCodecEncoder, opts);
@@ -619,13 +659,13 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 		}
 	}
 
-	private void setCodecSpecificEncoderOptions(@NonNull String avEncName, long bitRateBps) {
+	private void setCodecSpecificEncoderOptions(long bitRateBps) {
 		if (encoderCtx == null) {
 			return;
 		}
 		// bit rate
-		if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_LIBSVTAV1) ||
-				avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_NVENC)) {
+		if (encoderName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_LIBSVTAV1) ||
+				encoderName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_NVENC)) {
 			encoderCtx.rc_min_rate((long)((double)bitRateBps * 0.75));
 			encoderCtx.rc_max_rate((long)((double)bitRateBps * 1.25));
 		} else {
@@ -646,14 +686,14 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			 */
 			String tmpValCu;
 			String tmpValCrf;
-			if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_NVENC)) {
+			if (encoderName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_NVENC)) {
 				//noinspection EnhancedSwitchMigration
 				switch (tcSettingsVid.cfgQualitySpeedRatioAv1) {
 					case FASTEST: tmpValCu = "14"; tmpValCrf = "40"; break;
 					case BALANCED: tmpValCu = "7"; tmpValCrf = "32"; break;
 					default: tmpValCu = "1"; tmpValCrf = "24"; break;
 				}
-			} else if (avEncName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_LIBSVTAV1)) {
+			} else if (encoderName.equalsIgnoreCase(FfmpegTcEncoderLists.ENCODER_NAME_V_AV1_LIBSVTAV1)) {
 				//noinspection EnhancedSwitchMigration
 				switch (tcSettingsVid.cfgQualitySpeedRatioAv1) {
 					case FASTEST: tmpValCu = "11"; tmpValCrf = "32"; break;
