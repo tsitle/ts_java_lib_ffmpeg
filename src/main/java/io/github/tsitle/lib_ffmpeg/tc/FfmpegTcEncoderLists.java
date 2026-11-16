@@ -46,9 +46,9 @@ public final class FfmpegTcEncoderLists extends FfmpegTcEnDeCoderListsBase {
 	// -----------------------------------------------------
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_AV1 = new ArrayList<>() {{
-			add(ENCODER_NAME_V_AV1_RKMPP);  // untested
+			add(ENCODER_NAME_V_AV1_RKMPP);  // note: this is still missing in official FFmpeg 8.1.2 and in 'ffmpeg-rockchip' @TODO untested
 			add(ENCODER_NAME_V_AV1_NVENC);
-			add(ENCODER_NAME_V_AV1_LIBSVTAV1);
+			add(ENCODER_NAME_V_AV1_LIBSVTAV1);  // tested: OK
 			add("av1_qsv");  // untested
 			add("av1_amf");  // untested
 			//add("av1_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
@@ -56,7 +56,7 @@ public final class FfmpegTcEncoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_H264 = new ArrayList<>() {{
-			add(ENCODER_NAME_V_H264_RKMPP);  // untested
+			add(ENCODER_NAME_V_H264_RKMPP);  // tested in 'ffmpeg-rockchip': OK
 			add(ENCODER_NAME_V_H264_NVENC);
 			add("libx264");  // untested
 			//add("h264_vulkan");  // untested, does not accept pixel format YUV420P and requires hardware frames
@@ -68,7 +68,7 @@ public final class FfmpegTcEncoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_H265 = new ArrayList<>() {{
-			add(ENCODER_NAME_V_H265_RKMPP);  // untested
+			add(ENCODER_NAME_V_H265_RKMPP);  // tested in 'ffmpeg-rockchip': OK
 			add(ENCODER_NAME_V_H265_NVENC);
 			//add("hevc_vulkan");  // untested, does not accept pixel format YUV420P and requires hardware frames
 			add("libx265");  // untested
@@ -79,38 +79,38 @@ public final class FfmpegTcEncoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_MJPEG = new ArrayList<>() {{
-			add(ENCODER_NAME_V_MJPEG_RKMPP);  // untested
+			add(ENCODER_NAME_V_MJPEG_RKMPP);  // tested in 'ffmpeg-rockchip': OK
 			add("mjpeg");
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_MPEG2 = new ArrayList<>() {{
-			add(ENCODER_NAME_V_MPEG2_RKMPP);  // untested
-			add("mpeg2video");
+			add(ENCODER_NAME_V_MPEG2_RKMPP);  // note: this is still missing in official FFmpeg 8.1.2 and in 'ffmpeg-rockchip' @TODO untested
+			add("mpeg2video");  // tested: OK
 			add("mpeg2_qsv");  // untested
 			//add("mpeg2_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_MPEG4 = new ArrayList<>() {{
-			add(ENCODER_NAME_V_MPEG4_RKMPP);  // untested
-			add("mpeg4");
+			add(ENCODER_NAME_V_MPEG4_RKMPP);  // note: this is still missing in official FFmpeg 8.1.2 and in 'ffmpeg-rockchip' @TODO untested
+			add("mpeg4");  // tested: OK
 			add("libxvid");  // untested
 			add("mpeg4_v4l2m2m");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_THEORA = new ArrayList<>() {{
-			add("libtheora");
+			add("libtheora");  // tested: OK
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_VP8 = new ArrayList<>() {{
-			add(ENCODER_NAME_V_VP8_RKMPP);  // untested
-			add("libvpx");
+			add(ENCODER_NAME_V_VP8_RKMPP);  // note: this exists in official FFmpeg 8.1.2 but is missing in 'ffmpeg-rockchip' @TODO untested
+			add("libvpx");  // tested: OK
 			add("vp8_v4l2m2m");  // untested
 			//add("vp8_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
 		}};
 
 	private static final @NonNull List<@NonNull String> ENCODERS_V_VP9 = new ArrayList<>() {{
-			add(ENCODER_NAME_V_VP9_RKMPP);  // untested
-			add("libvpx-vp9");
+			add(ENCODER_NAME_V_VP9_RKMPP);  // note: this exists in official FFmpeg 8.1.2 but is missing in 'ffmpeg-rockchip' @TODO untested
+			add("libvpx-vp9");  // tested: OK
 			//add("vp9_vaapi");  // untested, does not accept pixel format YUV420P and requires hardware frames
 			add("vp9_qsv");  // untested
 		}};

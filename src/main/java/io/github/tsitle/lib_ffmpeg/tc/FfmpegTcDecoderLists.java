@@ -53,7 +53,7 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 	// -----------------------------------------------------
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_AV1 = new ArrayList<>() {{
-			add(DECODER_NAME_V_AV1_RKMPP);  // note: this is still missing in FFmpeg 8.1.2
+			add(DECODER_NAME_V_AV1_RKMPP);  // note: this is still missing in official FFmpeg 8.1.2 - but exists in 'ffmpeg-rockchip' - tested in 'ffmpeg-rockchip': OK
 			add(DECODER_NAME_V_AV1_NVDEC);
 			add("av1");
 			add("libaom-av1");
@@ -61,7 +61,7 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_H264 = new ArrayList<>() {{
-			add(DECODER_NAME_V_H264_RKMPP);
+			add(DECODER_NAME_V_H264_RKMPP);  // tested in 'ffmpeg-rockchip': OK
 			add(DECODER_NAME_V_H264_NVDEC);
 			add("h264");
 			add("libopenh264");
@@ -70,7 +70,7 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_H265 = new ArrayList<>() {{
-			add(DECODER_NAME_V_H265_RKMPP);
+			add(DECODER_NAME_V_H265_RKMPP);  // tested in 'ffmpeg-rockchip': OK
 			add(DECODER_NAME_V_H265_NVDEC);
 			add("hevc");
 			add("hevc_v4l2m2m");  // untested
@@ -78,14 +78,14 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_MJPEG = new ArrayList<>() {{
-			add(DECODER_NAME_V_MJPEG_RKMPP);  // note: this is still missing in FFmpeg 8.1.2
+			add(DECODER_NAME_V_MJPEG_RKMPP);  // note: this is still missing in official FFmpeg 8.1.2 - but exists in 'ffmpeg-rockchip' - tested in 'ffmpeg-rockchip': OK
 			add(DECODER_NAME_V_MJPEG_NVDEC);
 			add("mjpeg");
 			add("mjpeg_qsv");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_MPEG2 = new ArrayList<>() {{
-			add(DECODER_NAME_V_MPEG2_RKMPP);  // note: this is still missing in FFmpeg 8.1.2
+			add(DECODER_NAME_V_MPEG2_RKMPP);  // note: this is still missing in official FFmpeg 8.1.2 - but exists in 'ffmpeg-rockchip' - tested in 'ffmpeg-rockchip': OK
 			add(DECODER_NAME_V_MPEG2_NVDEC);
 			add("mpeg2video");
 			add("mpeg2_v4l2m2m");  // untested
@@ -93,29 +93,29 @@ public final class FfmpegTcDecoderLists extends FfmpegTcEnDeCoderListsBase {
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_MPEG4 = new ArrayList<>() {{
-			add(DECODER_NAME_V_MPEG4_RKMPP);  // note: this is still missing in FFmpeg 8.1.2
+			add(DECODER_NAME_V_MPEG4_RKMPP);  // note: this is still missing in official FFmpeg 8.1.2 - but exists in 'ffmpeg-rockchip' - tested in 'ffmpeg-rockchip': OK
 			add(DECODER_NAME_V_MPEG4_NVDEC);
 			add("mpeg4");
 			add("mpeg4_v4l2m2m");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_THEORA = new ArrayList<>() {{
-			add("theora");
+			add("theora");  // tested: OK
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_VP8 = new ArrayList<>() {{
-			add(DECODER_NAME_V_VP8_RKMPP);
+			add(DECODER_NAME_V_VP8_RKMPP);  // @TODO fails because deinterlacing cannot be configured (kernel 5.10.160-rockchip)
 			add(DECODER_NAME_V_VP8_NVDEC);
-			add("libvpx");
+			add("libvpx");  // tested: OK
 			add("vp8");
 			add("vp8_v4l2m2m");  // untested
 			add("vp8_qsv");  // untested
 		}};
 
 	private static final @NonNull List<@NonNull String> DECODERS_V_VP9 = new ArrayList<>() {{
-			add(DECODER_NAME_V_VP9_RKMPP);
+			add(DECODER_NAME_V_VP9_RKMPP);  // @TODO fails because deinterlacing cannot be configured (kernel 5.10.160-rockchip)
 			add(DECODER_NAME_V_VP9_NVDEC);
-			add("libvpx-vp9");
+			add("libvpx-vp9");  // tested: OK
 			add("vp9");
 			add("vp9_v4l2m2m");  // untested
 			add("vp9_qsv");  // untested
