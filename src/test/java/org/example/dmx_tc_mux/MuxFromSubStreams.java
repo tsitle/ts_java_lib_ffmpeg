@@ -137,7 +137,7 @@ class MuxFromSubStreams implements LogMsgInterface  {
 
 		localCfg.tc.vid.videoBitRateKbps = 512 * 4;
 		localCfg.tc.vid.videoImgScalingMode = FfmpegTcSettingsOutVideo.ImageScalingMode.LIMITED;
-		localCfg.tc.vid.videoImgDimsMax = 1280;
+		localCfg.tc.vid.videoImgDimsMax = 720;
 		localCfg.tc.vid.videoImgDimsFixed = 2560;
 		localCfg.tc.vid.videoFrameRateCm = FfmpegTcSettingsOutVideo.FrameRateConversionMode.LIMITED;
 		localCfg.tc.vid.videoFrameRateMax = FrameRateEnum.FPS_30_0;
