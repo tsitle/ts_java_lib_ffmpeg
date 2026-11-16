@@ -7,6 +7,7 @@ import io.github.tsitle.lib_ffmpeg.FfmpegPixelFmt;
 import io.github.tsitle.lib_ffmpeg.exceptions.FfmpegGenericException;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 public final class FfmpegHelperPixelFmtConv {
 
@@ -31,13 +32,21 @@ public final class FfmpegHelperPixelFmtConv {
 				case avutil.AV_PIX_FMT_YUV420P10LE -> FfmpegPixelFmt.YUV420P10LE;
 				case avutil.AV_PIX_FMT_YUV444P, avutil.AV_PIX_FMT_YUVJ444P -> FfmpegPixelFmt.YUV444P;
 				default -> {
-					String pixFmtName;
-					try (BytePointer bp = avutil.av_get_pix_fmt_name(pixelFmt)) {
-						pixFmtName = (bp != null ? bp.getString(StandardCharsets.UTF_8) : "-unknown-");
-					}
+					String pixFmtName = getPixelFmtNameFromInt(pixelFmt).orElse("-unknown-");
 					throw new FfmpegGenericException(fncName + ": unsupported PixelFmt: " + pixFmtName + " (#" + pixelFmt + ")");
 				}
 			};
+	}
+
+	public static Optional<String> getPixelFmtNameFromInt(int pixelFmt) {
+		String pixFmtName;
+		try (BytePointer bp = avutil.av_get_pix_fmt_name(pixelFmt)) {
+			pixFmtName = (bp != null ? bp.getString(StandardCharsets.UTF_8) : "");
+		}
+		if (pixFmtName.isBlank()) {
+			return Optional.empty();
+		}
+		return Optional.of(pixFmtName);
 	}
 
 }
