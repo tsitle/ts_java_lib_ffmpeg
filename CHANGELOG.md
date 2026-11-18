@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.4] - 2026-11-18
+
+### Added
+
+- support for disabling audio/video decoders
+
+### Changed
+
+- improved support for RKMPP hardware accelerated video de-/encoders (for Rockchip CPUs)
+
+### Fixed
+
+- allow MPEG2-video without decoder 'extradata'
+
 ## [1.2.3] - 2026-11-03
 
 ### Added
