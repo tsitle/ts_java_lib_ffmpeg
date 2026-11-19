@@ -13,13 +13,19 @@ plugins {
 group = "io.github.tsitle"
 version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gradle.properties'
 
-// use custom libraries from Maven repository?
+// use custom library 'TS Lib Xrtxp' from Maven repository?
 var tmpArgProvider = providers.gradleProperty("useCustomLibFromMaven_xrtxp")  // returns null if not provided
 val doUseCustomLibFromMavenXrtxp: Boolean = tmpArgProvider.isPresent
 
-// use custom libraries from Maven repository?
+// use custom JavaCPP+FFmpeg build?
 tmpArgProvider = providers.gradleProperty("useCustomBuiltJavaCppAndFfmpeg")  // returns null if not provided
 val doUseCustomBuiltJavaCppAndFfmpeg: Boolean = tmpArgProvider.isPresent
+// was custom JavaCPP+FFmpeg build built from FFmpeg-Rockchip fork?
+tmpArgProvider = providers.gradleProperty("withRockchipFork")  // returns null if not provided
+val doesUseRockchipFork: Boolean = tmpArgProvider.isPresent
+// was custom JavaCPP+FFmpeg build built with Rockchip hardware video en-/decoder acceleration support?
+tmpArgProvider = providers.gradleProperty("withRkmpp")  // returns null if not provided
+val doesHaveRkmpp: Boolean = tmpArgProvider.isPresent
 
 //
 val depsVersionFfmpeg = project.findProperty("depsVersionFfmpeg")!! as String
@@ -29,6 +35,11 @@ val depsVersionTsLibXrtxp = project.findProperty("depsVersionTsLibXrtxp")!! as S
 
 if (doUseCustomBuiltJavaCppAndFfmpeg) {
 	version = "${version}-cb_javacpp_ffmpeg"
+	if (doesHaveRkmpp) {
+		version = "${version}-rkmpp"
+	}
+} else if (doesUseRockchipFork || doesHaveRkmpp) {
+	throw Error("FFmpeg-Rockchip fork and RKMPP can only be used with custom-built JavaCPP+FFmpeg")
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -59,11 +70,16 @@ if (osName == "win" && cpuArch != "x64") {
 	throw Error("Cannot build for ${osName}-${cpuArch}")
 }
 
+if ((doesUseRockchipFork || doesHaveRkmpp) && (osName != "linux" || cpuArch != "aarch64")) {
+	throw Error("FFmpeg-Rockchip fork and RKMPP can only be used on Linux/aarch64")
+}
+
 println("Building lib version: $version")
 println("Host: ${osName}-${cpuArch}")
 println("FFmpeg version: $depsVersionFfmpeg")
 println("Use ts_lib_xrtxp from Maven: $doUseCustomLibFromMavenXrtxp")
-println("Use custom-built JavaCPP/FFmpeg: $doUseCustomBuiltJavaCppAndFfmpeg")
+println("Use custom-built JavaCPP/FFmpeg: ${doUseCustomBuiltJavaCppAndFfmpeg} " +
+		"(with Rockchip fork: ${doesUseRockchipFork}, with RKMPP: ${doesHaveRkmpp})")
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -280,6 +296,9 @@ val generateLibInfo = tasks.register("generateLibInfo") {
 				private static final String LIB_VERSION = "$libVersion";
 				private static final String FFMPEG_VERSION = "$depsVersionFfmpeg";
 				private static final String GIT_COMMIT = "$gitCommitHash";
+				private static final boolean IS_CUSTOM_J_A_F_BUILD = ${doUseCustomBuiltJavaCppAndFfmpeg.toString().lowercase()};
+				private static final boolean USES_FF_ROCKCHIP_FORK = ${doesUseRockchipFork.toString().lowercase()};
+				private static final boolean HAS_RKMPP = ${doesHaveRkmpp.toString().lowercase()};
 
 				public static Optional<String> getLibVersion() {
 					if (LIB_VERSION.isBlank() || "null".equals(LIB_VERSION)) { return Optional.empty(); }
@@ -292,6 +311,15 @@ val generateLibInfo = tasks.register("generateLibInfo") {
 				public static Optional<String> getGitCommit() {
 					if (GIT_COMMIT.isBlank() || "null".equals(GIT_COMMIT)) { return Optional.empty(); }
 					return Optional.of(GIT_COMMIT);
+				}
+				public static boolean isCustomJavaCppAndFfmpegBuild() {
+					return IS_CUSTOM_J_A_F_BUILD;
+				}
+				public static boolean usesFfmpegRockchipFork() {
+					return USES_FF_ROCKCHIP_FORK;
+				}
+				public static boolean hasRkmppSupport() {
+					return HAS_RKMPP;
 				}
 			}
 			""".trimIndent()
