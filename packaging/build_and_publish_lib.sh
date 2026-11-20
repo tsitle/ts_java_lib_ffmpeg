@@ -77,6 +77,10 @@ function printUsage() {
 	echo "  'pub'                         : Publish to Maven Central Repository"
 }
 
+if [ $# -gt 0 ] && [ "${1}" = "--help" ]; then
+	printUsage
+	exit 0
+fi
 if [ $# -lt 2 ] || [ $# -gt 6 ]; then
 	echo -e "${VAR_MYNAME}: invalid number of arguments\n" >/dev/stderr
 	printUsage >/dev/stderr
