@@ -17,13 +17,13 @@ version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gr
 var tmpArgProvider = providers.gradleProperty("useCustomLibFromMaven_xrtxp")  // returns null if not provided
 val doUseCustomLibFromMavenXrtxp: Boolean = tmpArgProvider.isPresent
 
-// use custom JavaCPP+FFmpeg build?
+// use 'custom JavaCPP+FFmpeg build'?
 tmpArgProvider = providers.gradleProperty("useCustomBuiltJavaCppAndFfmpeg")  // returns null if not provided
 val doUseCustomBuiltJavaCppAndFfmpeg: Boolean = tmpArgProvider.isPresent
-// was custom JavaCPP+FFmpeg build built from FFmpeg-Rockchip fork?
+// was 'custom JavaCPP+FFmpeg build' built from FFmpeg-Rockchip fork?
 tmpArgProvider = providers.gradleProperty("withRockchipFork")  // returns null if not provided
 val doesUseRockchipFork: Boolean = tmpArgProvider.isPresent
-// was custom JavaCPP+FFmpeg build built with Rockchip hardware video en-/decoder acceleration support?
+// was 'custom JavaCPP+FFmpeg build' built with Rockchip hardware accelerated video en-/decoders support?
 tmpArgProvider = providers.gradleProperty("withRkmpp")  // returns null if not provided
 val doesHaveRkmpp: Boolean = tmpArgProvider.isPresent
 
@@ -147,19 +147,26 @@ dependencies {
 			implementation("org.bytedeco:ffmpeg-platform:7.1.1-1.5.12")
 		}
 		"8.0.1" -> {
-			implementation("org.bytedeco:ffmpeg-platform:8.0.1-1.5.13")  // requires Linux package 'libva-drm2'
+			implementation("org.bytedeco:ffmpeg-platform:8.0.1-1.5.13")
 		}*/
 		"8.1.2" -> {
 			if (doUseCustomBuiltJavaCppAndFfmpeg) {
+				var tmpFfJcppVersionSuffix = "tsitle"
+				if (doesUseRockchipFork) {
+					tmpFfJcppVersionSuffix += "-rf"
+				}
+				if (doesHaveRkmpp) {
+					tmpFfJcppVersionSuffix += "-rkmpp"
+				}
 				/*
 				 * Note: without 'ffmpeg-platform' we need to add the following dependencies manually
 				 */
-				implementation("org.bytedeco:ffmpeg:8.1.2-1.5.14-tsitle")  // requires Linux package 'libva-drm2'
-				implementation("org.bytedeco:ffmpeg:8.1.2-1.5.14-tsitle:${osName}-${cpuArchJavaCpp}")  // requires Linux package 'libva-drm2'
+				implementation("org.bytedeco:ffmpeg:8.1.2-1.5.14-${tmpFfJcppVersionSuffix}")
+				implementation("org.bytedeco:ffmpeg:8.1.2-1.5.14-${tmpFfJcppVersionSuffix}:${osName}-${cpuArchJavaCpp}")
 				implementation("org.bytedeco:javacpp:1.5.14")
 				implementation("org.bytedeco:javacpp:1.5.14:${osName}-${cpuArchJavaCpp}")
 			} else {
-				implementation("org.bytedeco:ffmpeg-platform:8.1.2-1.5.14")  // requires Linux package 'libva-drm2'
+				implementation("org.bytedeco:ffmpeg-platform:8.1.2-1.5.14")
 			}
 		}
 		else -> { throw Error("FFmpeg version '${depsVersionFfmpeg}' not supported") }
