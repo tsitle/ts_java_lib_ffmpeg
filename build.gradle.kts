@@ -6,7 +6,7 @@ plugins {
 	// this plugin will filter the JavaCPP and FFmpeg libraries such that only libs for the current CPU architecture will be included
 	id("org.bytedeco.gradle-javacpp-platform") version "1.5.10"
 	id("com.gradleup.shadow") version "9.6.1"  // for Fat JARs
-	id("maven-publish")
+	id("maven-publish")  // for task 'publishToMavenLocal' and the plugin 'org.jreleaser'
 	id("org.jreleaser") version "1.27.0"
 }
 
