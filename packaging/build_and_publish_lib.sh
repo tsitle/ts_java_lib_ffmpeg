@@ -227,7 +227,7 @@ else
 fi
 
 TMP_GRADLE_EXTRA_ARGS=""
-test -z "${LOPT_LIB_XRTXP_COMMIT_OR_BRANCH}" && TMP_GRADLE_EXTRA_ARGS+=" -PuseCustomLibFromMaven_xrtxp"
+test -z "${LOPT_LIB_XRTXP_COMMIT_OR_BRANCH}" && TMP_GRADLE_EXTRA_ARGS+=" -PuseCustomLibFromMavenCentral_xrtxp"
 test "${LOPT_DO_CUSTOM_BUILD_JAVACPP_FFMPEG}" = "true" && TMP_GRADLE_EXTRA_ARGS+=" -PuseCustomBuiltJavaCppAndFfmpeg"
 test "${LOPT_DO_WITH_ROCKCHIP_FORK}" = "true" && TMP_GRADLE_EXTRA_ARGS+=" -PwithRockchipFork"
 test "${LOPT_DO_RKMPP}" = "true" && TMP_GRADLE_EXTRA_ARGS+=" -PwithRkmpp"

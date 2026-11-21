@@ -161,7 +161,7 @@ docker run \
 	-e TS_LIB_FFMPEG_UT_DISABLED_ENCODERS="av1_nvenc,av1_qsv,h264_nvenc,h264_qsv,hevc_nvenc,hevc_v4l2m2m,hevc_qsv" \
 	"${LCFG_IMAGE_NAME}:latest"
 
-TMP_GRADLE_EXTRA_ARGS="-PuseCustomLibFromMaven_xrtxp"
+TMP_GRADLE_EXTRA_ARGS="-PuseCustomLibFromMavenCentral_xrtxp"
 [ "${LOPT_DO_CUSTOM_BUILD_JAVACPP_FFMPEG}" = "true" ] && TMP_GRADLE_EXTRA_ARGS+=" -PuseCustomBuiltJavaCppAndFfmpeg"
 test "${LOPT_DO_WITH_ROCKCHIP_FORK}" = "true" && TMP_GRADLE_EXTRA_ARGS+=" -PwithRockchipFork"
 test "${LOPT_DO_RKMPP}" = "true" && TMP_GRADLE_EXTRA_ARGS+=" -PwithRkmpp"

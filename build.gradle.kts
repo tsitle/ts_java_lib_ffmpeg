@@ -13,9 +13,9 @@ plugins {
 group = "io.github.tsitle"
 version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gradle.properties'
 
-// use custom library 'TS Lib Xrtxp' from Maven repository?
-var tmpArgProvider = providers.gradleProperty("useCustomLibFromMaven_xrtxp")  // returns null if not provided
-val doUseCustomLibFromMavenXrtxp: Boolean = tmpArgProvider.isPresent
+// use custom library 'TS Lib Xrtxp' from Maven Central repository?
+var tmpArgProvider = providers.gradleProperty("useCustomLibFromMavenCentral_xrtxp")  // returns null if not provided
+val doUseCustomLibFromMavenCentralXrtxp: Boolean = tmpArgProvider.isPresent
 
 // use 'custom JavaCPP+FFmpeg build'?
 tmpArgProvider = providers.gradleProperty("useCustomBuiltJavaCppAndFfmpeg")  // returns null if not provided
@@ -77,7 +77,7 @@ if ((doesUseRockchipFork || doesHaveRkmpp) && (osName != "linux" || cpuArch != "
 println("Building lib version: $version")
 println("Host: ${osName}-${cpuArch}")
 println("FFmpeg version: $depsVersionFfmpeg")
-println("Use ts_lib_xrtxp from Maven: $doUseCustomLibFromMavenXrtxp")
+println("Use ts_lib_xrtxp from Maven Central: $doUseCustomLibFromMavenCentralXrtxp")
 println("Use custom-built JavaCPP/FFmpeg: ${doUseCustomBuiltJavaCppAndFfmpeg} " +
 		"(with Rockchip fork: ${doesUseRockchipFork}, with RKMPP: ${doesHaveRkmpp})")
 
@@ -118,7 +118,7 @@ repositories {
 		mavenLocal()  // for the locally built JavaCPP/FFmpeg library (see Docker base image)
 	}
 	mavenCentral()
-	if (! doUseCustomLibFromMavenXrtxp) {
+	if (! doUseCustomLibFromMavenCentralXrtxp) {
 		// for local development:
 		flatDir { dirs(
 				"../lib-rtsp_xrtxp/build/libs"
@@ -173,7 +173,7 @@ dependencies {
 	}
 
 	// custom libraries
-	if (! doUseCustomLibFromMavenXrtxp) {
+	if (! doUseCustomLibFromMavenCentralXrtxp) {
 		implementation(":ts_lib_xrtxp:${depsVersionTsLibXrtxp}")  // for local development
 	} else {
 		implementation("io.github.tsitle:ts_lib_xrtxp:${depsVersionTsLibXrtxp}")  // use official release
