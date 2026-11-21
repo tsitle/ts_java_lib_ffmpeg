@@ -85,6 +85,11 @@ RUN --mount=type=secret,id=jreleaser,target=/root/.jreleaser/config.toml \
 		|| echo -n; \
 	else echo -n; fi
 
+# Publish to local Maven Repository
+RUN \
+	cd libs/lib-ts_ffmpeg \
+	&& ./gradlew publishToMavenLocal --no-daemon ${CF_GRADLE_EXTRA_ARGS}
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -122,6 +127,15 @@ RUN \
 	mkdir -p /root/.m2/repository/org
 
 COPY --from=graalvm-ffmpeg-javacpp-base /root/.m2/repository/org/bytedeco /root/.m2/repository/org/bytedeco
+
+# ----------------------------------------------------
+# Copy the local Maven repository directory for the freshly built version of TsLibFfmpeg
+# ----------------------------------------------------
+
+RUN \
+	mkdir -p /root/.m2/repository/io/github
+
+COPY --from=graalvm-ffmpeg-javacpp-base /root/.m2/repository/io/github/tsitle /root/.m2/repository/io/github/tsitle
 
 # ----------------------------------------------------
 # Copy the custom-built Rockchip Media Process Platform (MPP) library and the librga
