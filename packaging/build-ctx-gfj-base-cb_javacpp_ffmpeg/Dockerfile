@@ -39,6 +39,9 @@ RUN \
 		|| exit 1; \
 	else echo -n; fi
 
+#ADD "files/rkmpp-official-2026_11_03-g9b56348.tgz" /build/
+#ADD "files/rkmpp-nyanmisaka-2026_11_03-g848b885.tgz" /build/
+
 RUN \
 	if [ "${CF_GRAAL_ARCH}" = "aarch64" ] && [ "${CF_WITH_ROCKCHIP_FORK}" = "true" ]; then \
 		git clone -b jellyfin-mpp --depth=1 https://github.com/nyanmisaka/mpp.git rkmpp \
@@ -64,6 +67,9 @@ RUN \
 		&& make install \
 		|| exit 1; \
 	else echo -n; fi
+
+#ADD "files/rkrga-official-2026_06_10-g2b32edc.tgz" /build/
+#ADD "files/rkrga-nyanmisaka-2025_10_19-g1d330cc.tgz" /build/
 
 RUN \
 	if [ "${CF_GRAAL_ARCH}" = "aarch64" ] && [ "${CF_WITH_ROCKCHIP_FORK}" = "true" ]; then \
@@ -112,20 +118,6 @@ RUN \
 ARG CF_FFMPEG_VERSION=-unknown-
 ARG CF_FFMPEG_MAJMIN_VERSION=-unknown-
 
-#ADD "files/ffmpeg-${CF_FFMPEG_VERSION}.tar.xz" /build/
-
-RUN \
-	if [ "${CF_GRAAL_ARCH}" = "aarch64" ] && [ "${CF_WITH_ROCKCHIP_FORK}" = "true" ]; then \
-		git clone --branch ${CF_FFMPEG_MAJMIN_VERSION} --single-branch --depth=1 \
-			https://github.com/nyanmisaka/ffmpeg-rockchip.git ffmpeg-${CF_FFMPEG_VERSION} \
-		|| exit 1; \
-	else \
-		curl -LO "https://ffmpeg.org/releases/ffmpeg-${CF_FFMPEG_VERSION}.tar.xz" \
-		&& tar -xf "ffmpeg-${CF_FFMPEG_VERSION}.tar.xz" \
-		&& rm "ffmpeg-${CF_FFMPEG_VERSION}.tar.xz" \
-		|| exit 1; \
-	fi
-
 RUN \
 	apt install --no-install-recommends -y \
 		libdrm-dev \
@@ -153,6 +145,21 @@ RUN \
 		&& make install \
 		|| exit 1; \
 	else echo -n; fi;
+
+#ADD "files/ffmpeg-official-${CF_FFMPEG_VERSION}.tgz" /build/
+#ADD "files/ffmpeg-nyanmisaka-8.1.3-2026_11_20-g3214b34.tgz" /build/
+
+RUN \
+	if [ "${CF_GRAAL_ARCH}" = "aarch64" ] && [ "${CF_WITH_ROCKCHIP_FORK}" = "true" ]; then \
+		git clone --branch ${CF_FFMPEG_MAJMIN_VERSION} --single-branch --depth=1 \
+			https://github.com/nyanmisaka/ffmpeg-rockchip.git ffmpeg-${CF_FFMPEG_VERSION} \
+		|| exit 1; \
+	else \
+		curl -LO "https://ffmpeg.org/releases/ffmpeg-${CF_FFMPEG_VERSION}.tar.xz" \
+		&& tar -xf "ffmpeg-${CF_FFMPEG_VERSION}.tar.xz" \
+		&& rm "ffmpeg-${CF_FFMPEG_VERSION}.tar.xz" \
+		|| exit 1; \
+	fi
 
 RUN \
 	TMP_ARG_FF=""; \
@@ -208,11 +215,10 @@ RUN \
 ARG CF_JAVACPP_VERSION=-unknown-
 ARG CF_JAVACPP_ARCH=-unknown-
 
-#ADD "files/javacpp-presets-source-${CF_JAVACPP_VERSION}.tgz" /build/
+#ADD "files/javacpp-presets-${CF_JAVACPP_VERSION}-2026_08_10-gd57d8a2.tgz" /build/
 #RUN \
-#	cd javacpp-presets \
-#	&& git config --global --add safe.directory /build/javacpp-presets
-#	&& git checkout -b customtemp "${CF_JAVACPP_VERSION}"
+#	git config --global --add safe.directory /build/javacpp-presets-${CF_JAVACPP_VERSION} \
+#	&& ln -s javacpp-presets-${CF_JAVACPP_VERSION} javacpp-presets
 
 RUN \
 	git init javacpp-presets \
