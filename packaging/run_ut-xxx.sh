@@ -150,7 +150,7 @@ LVAR_CONT_NAME="lib-ts_ffmpeg-test"
 [ "${LOPT_DO_RKMPP}" = "true" ] && LVAR_CONT_NAME+="-rkmpp"
 
 docker run \
-	-it --rm \
+	-i --rm \
 	-d \
 	--name "${LVAR_CONT_NAME}" \
 	--entrypoint "/bin/bash" \
@@ -166,15 +166,15 @@ TMP_GRADLE_EXTRA_ARGS="-PuseCustomLibFromMavenCentral_xrtxp"
 test "${LOPT_DO_WITH_ROCKCHIP_FORK}" = "true" && TMP_GRADLE_EXTRA_ARGS+=" -PwithRockchipFork"
 test "${LOPT_DO_RKMPP}" = "true" && TMP_GRADLE_EXTRA_ARGS+=" -PwithRkmpp"
 
-docker exec -it \
+docker exec -i \
 	"${LVAR_CONT_NAME}" \
 	git pull || exit 1
 if [ -n "${LOPT_LIB_FFMPEG_COMMIT_OR_BRANCH}" ]; then
-	docker exec -it \
+	docker exec -i \
 		"${LVAR_CONT_NAME}" \
 		git checkout "${LOPT_LIB_FFMPEG_COMMIT_OR_BRANCH}" || exit 1
 fi
-docker exec -it \
+docker exec -i \
 	"${LVAR_CONT_NAME}" \
 	./gradlew :test --tests "${1}" --no-daemon ${TMP_GRADLE_EXTRA_ARGS}
 TMP_R=$?
