@@ -3,6 +3,8 @@
 **/.gitattributes
 **/README.md
 
+#files/graalvm-*
+
 
 # =========================
 # IDE Files

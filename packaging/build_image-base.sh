@@ -88,6 +88,18 @@ LVAR_DEBIAN_DIST="$(_getCpuArch debian_dist)"
 LVAR_GRAAL_ARCH="$(_getCpuArch graal)"
 LVAR_GRAAL_VERSION_MAJOR="25"
 
+# ----------------------------------------------------------
+
+TMP_GRAALVM_OUTP_FN="graalvm-jdk-${LVAR_GRAAL_VERSION_MAJOR}_linux-${LVAR_GRAAL_ARCH}_bin.tar.gz"
+if [ ! -f "files/${TMP_GRAALVM_OUTP_FN}" ]; then
+	echo -e "\n${VAR_MYNAME}: ---------------------------------------------------------------------------"
+	echo -e "${VAR_MYNAME}: downloading GraalVM JDK...\n"
+	curl -LO "https://download.oracle.com/graalvm/${LVAR_GRAAL_VERSION_MAJOR}/latest/${TMP_GRAALVM_OUTP_FN}" \
+		--output-dir "files/" || exit 1
+fi
+
+# ----------------------------------------------------------
+
 LVAR_IMAGE_GFJ_BASE_NAME="lib-ts_ffmpeg-gfj_base-${LVAR_DEBIAN_DIST}"
 LVAR_IMAGE_GFJ_BASE_VER="g${LVAR_GRAAL_VERSION_MAJOR}"
 

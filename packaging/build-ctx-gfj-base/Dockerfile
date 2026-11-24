@@ -6,7 +6,7 @@ FROM debian:12
 ARG CF_GRAAL_ARCH=-unknown-
 ARG CF_GRAAL_VERSION_MAJOR=-unknown-
 
-#ADD "files/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}_linux-${CF_GRAAL_ARCH}_bin.tar.gz" /opt/
+ADD "files/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}_linux-${CF_GRAAL_ARCH}_bin.tar.gz" /opt/
 
 RUN \
 	apt update \
@@ -14,10 +14,12 @@ RUN \
 		ca-certificates \
 		curl
 
+#RUN \
+#	curl -LO "https://download.oracle.com/graalvm/${CF_GRAAL_VERSION_MAJOR}/latest/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}_linux-${CF_GRAAL_ARCH}_bin.tar.gz" \
+#	&& tar -xf "graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}_linux-${CF_GRAAL_ARCH}_bin.tar.gz" -C /opt
+
 RUN \
-	curl -LO "https://download.oracle.com/graalvm/${CF_GRAAL_VERSION_MAJOR}/latest/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}_linux-${CF_GRAAL_ARCH}_bin.tar.gz" \
-	&& tar -xf "graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}_linux-${CF_GRAAL_ARCH}_bin.tar.gz" -C /opt \
-	&& ln -s /opt/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}.* /opt/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}
+	ln -s /opt/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}.* /opt/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}
 
 ENV PATH="${PATH}:/opt/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}/bin"
 ENV JAVA_HOME="/opt/graalvm-jdk-${CF_GRAAL_VERSION_MAJOR}"

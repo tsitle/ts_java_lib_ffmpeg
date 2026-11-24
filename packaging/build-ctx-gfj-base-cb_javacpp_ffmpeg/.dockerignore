@@ -3,9 +3,12 @@
 **/.gitattributes
 **/README.md
 
-files/graalvm-*
-files/javacpp-presets-source-*
 files/ffmpeg-*
+files/javacpp-presets-*
+files/nv-codec-headers-*
+files/rkmpp-*
+files/rkrga-*
+
 
 # =========================
 # IDE Files
