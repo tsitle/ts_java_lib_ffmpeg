@@ -500,7 +500,7 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 			 *   1: Enable AFBC support
 			 *   2: Enable AFBC if capable RGA is available
 			 */
-			int r = avutil.av_opt_set(decoderCtx.priv_data(), "afbc", "2", 0);
+			int r = avutil.av_opt_set(decoderCtx.priv_data(), "afbc", "0", 0);
 			FfmpegHelperFfError.checkFfmpegResult(FNC_NAME, "av_opt_set()", r);
 			/*
 			 * (XXX_rkmpp) Enable IEP (Image Enhancement Processor) for de-interlacing (default true)
@@ -778,6 +778,11 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 
 		if (! needsSwScaler) {
 			return;
+		}
+
+		//
+		if (decoderCtx.pix_fmt() == avutil.AV_PIX_FMT_DRM_PRIME) {
+			throw new FfmpegGenericException(FNC_NAME + ": Cannot handle 'DRM Prime' pixel format");
 		}
 
 		//
