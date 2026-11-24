@@ -367,7 +367,8 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 				@NonNull ImageDimensions imgDims,
 				@NonNull FfmpegPixelFmt pixelFmt,
 				@NonNull RationalNumber timeBase,
-				@NonNull RationalNumber videoFps
+				@NonNull RationalNumber videoFps,
+				boolean doSetTimeBaseAndFps
 			) throws FfmpegGenericException {
 		final int FF_AUTH_THREAD_COUNT = 0;
 		final int FF_THREAD_FRAME = 1;
@@ -382,6 +383,9 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 				FfmpegHelperPixelFmtConv.convertPixelFmtToInt(fncName, pixelFmt)
 			);
 
+		if (! doSetTimeBaseAndFps) {
+			return;
+		}
 		// Optional but often helpful if known
 		try (AVRational tmpVideoTb = new AVRational()) {
 			tmpVideoTb.num(timeBase.getNumerator());
@@ -416,6 +420,17 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 
 		int r = avcodec.avcodec_parameters_to_context(decoderCtx, inputCodecPar);
 		FfmpegHelperFfError.checkFfmpegResult(FNC_NAME, "avcodec_parameters_to_context()", r);
+
+		// Required basics
+		setEnDeCoderBasics(
+				FNC_NAME,
+				decoderCtx,
+				sourceParamsVideo.imgDims,
+				sourceParamsVideo.pixelFmt,
+				RationalNumber.ofEmpty(),
+				RationalNumber.ofEmpty(),
+				false
+			);
 	}
 
 	private void prepareDecoderCtxFromStream(@NonNull AVCodec avCodecDecoder) throws FfmpegGenericException {
@@ -433,7 +448,8 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 				sourceParamsVideo.imgDims,
 				sourceParamsVideo.pixelFmt,
 				sourceTimeBase,
-				sourceParamsVideo.frameRate
+				sourceParamsVideo.frameRate,
+				true
 			);
 
 		//
@@ -613,7 +629,8 @@ final class FfmpegTcTranscoderVideo extends FfmpegTcTranscoderBase implements Au
 				outputImgDims,
 				outputPixelFormat,
 				tmpDestTb,
-				outputFrameRate
+				outputFrameRate,
+				true
 			);
 		/*
 		 * GOP size (Group of Pictures) is the number of frames between two full keyframes (I-frames)
