@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.2.5] - 2026-11-22 UNRELEASED
+## [1.2.5] - 2026-11-25
 
 ### Changed
 
 - updated 'ts_lib_xrtxp' version to 1.2.4
+- improved GraalVM JDK installation in Docker Images
+
+### Fixed
+
+- transcoding video with a hardware accelerated decoder could fail because of incorrect initialization of the pixel format
 
 ## [1.2.4] - 2026-11-21
 
